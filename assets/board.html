@@ -1,0 +1,48 @@
+<html>
+<head>
+    <style>
+        html, body {
+            margin: 0;
+            width: 400px;
+            height: 400px;
+        }
+        #board {
+            position: relative;
+            display: inline-block;
+        }
+        .tile {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            background-color: saddlebrown;
+        }
+        .tile:hover{
+            cursor: pointer;
+        }
+    </style>
+    <script>
+        function onPositionChoose(event) {
+            var position = event.target.id;
+            OnTileClick(position);
+        }
+        function init() {
+            var letters = "abcdefgh";
+
+            var board = document.getElementById("board");
+            for (let i = 0; i < 64; ++i) {
+                var tile = document.createElement("div");
+                tile.classList = "tile";
+                tile.id = letters[i % 8] + (8 - Math.floor(i / 8))
+                tile.addEventListener("click", onPositionChoose)
+                if ((i + Math.floor(i / 8)) % 2 == 0) {
+                    tile.style = "background-color: black;"
+                }
+                board.appendChild(tile);
+            }
+        }
+    </script>
+</head>
+<body onload="init();">
+    <div id="board"></div>
+</body>
+</html>
