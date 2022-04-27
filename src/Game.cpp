@@ -4,17 +4,12 @@ Player::Player(Side side) {
 	this->side = side;
 }
 
-bool Player::makeMove(std::string move) {
+bool Player::makeMove(const std::string &move) {
 	return false;
 }
 
-
 Board::Board() {
-
-}
-std::string Board::toString() const {
-	return "";
-}
-std::vector<Figure*> Board::toArray() const {
-	return std::vector<Figure*>();
+	int i = 0;
+	for (auto el : positions)
+		el = defaultPositions[i++];
 }
