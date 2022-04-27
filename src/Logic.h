@@ -14,6 +14,7 @@ private:
 
 	static bool inline isEnemy(const char&, const char&);
 	static std::pair<int, int> inline indToPair(int);
+	static int inline sgn(int);
 
 	std::vector<std::pair<int, int>> availableMovesForPawn(std::pair<int, int>, bool);
 	std::vector<std::pair<int, int>> availableMovesForRook(std::pair<int, int>);
