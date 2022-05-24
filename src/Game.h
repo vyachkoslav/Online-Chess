@@ -32,12 +32,12 @@ class Board {
 public:
 	Board();
 	Side getMovingSide() const { return movingSide; }
-	Figure* const *getPositions() { return positions; };
+	std::vector<Figure*> * getPositions() { return &positions; };
 
 private:
-	std::string defaultFigures = "RNBQKBNRPPPPPPPPpppppppprnbqkbnr";
+	std::string defaultFigures = "RNBQKBNRPPPPPPPPpppppppprnbqkbnr"; // Upper white
 	std::string defaultPositions = "RNBQKBNRPPPPPPPP" + std::string(32, ' ') + "pppppppprnbqkbnr";
 	Figure figures[32];
-	Figure* positions[64];
+	std::vector<Figure*> positions;
 	Side movingSide = Side::white;
 };

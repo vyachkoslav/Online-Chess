@@ -11,14 +11,14 @@ VectorOfPairs Logic::getAvailableMovesForFigure(Pos2D figPos)
 	}
 }
 
-bool inline Logic::isEmpty(const Figure*& x) {
+bool inline Logic::isEmpty(Figure* const & x) {
 	return !x;
 }
-bool inline Logic::isEnemy(const Figure*& x, const Figure*& y) {
+bool inline Logic::isEnemy(Figure* const & x, Figure* const & y) {
 	return (isEmpty(x) || isEmpty(y)) || std::islower(x->name) != std::islower(y->name);
 }
 Pos2D inline Logic::indToPair(int i) {
-	return Pos2D(i / 8, i % 8);
+	return Pos2D(i % 8, i / 8);
 }
 int inline Logic::pairToInd(int x, int y) {
 	return x + y * 8;
@@ -32,14 +32,15 @@ int inline Logic::sgn(int val) {
 
 VectorOfPairs Logic::movesBeforeFigureOrEnd(Pos2D figPos, bool (*filter)(Pos2D), void (*iter)(Pos2D&)) {
 	VectorOfPairs out;
-	const Figure* fig = *board[pairToInd(figPos)];
+	Figure* fig = (*board)[pairToInd(figPos)];
 	iter(figPos);
 	for (Pos2D pos = figPos; filter(pos); iter(pos)) {
-		if (isEnemy(fig, *board[pairToInd(pos)])) {
+		Figure* other = (*board)[pairToInd(pos)];
+		if (isEnemy(fig, (*board)[pairToInd(pos)])) {
 			out.push_back(Pos2D(pos));
 			break;
 		}
-		if (isEmpty(*board[pairToInd(pos)]))
+		if (isEmpty(other))
 			out.push_back(Pos2D(pos));
 		else
 			break;
@@ -54,7 +55,7 @@ VectorOfPairs Logic::availableMovesForPawn(Pos2D figPos) {
 	VectorOfPairs out;
 	
 	int index = pairToInd(figPos.first, figPos.second);
-	const Figure** fig = board[index];
+	std::vector<Figure*>::const_iterator fig = board->begin() + index;
 	const char& name = (*fig)->name;
 	int frontCell = std::isupper(name) ? 8 : -8;
 
@@ -129,7 +130,7 @@ VectorOfPairs Logic::availableMovesForQueen(Pos2D figPos) {
 
 VectorOfPairs Logic::availableMovesForKnight(Pos2D figPos) {
 	VectorOfPairs out;
-	const Figure* fig = *board[pairToInd(figPos)];
+	Figure* fig = (*board)[pairToInd(figPos)];
 
 	int options[4] = { -2, -1, 1, 2 };
 	for (int x : options) {
@@ -139,7 +140,7 @@ VectorOfPairs Logic::availableMovesForKnight(Pos2D figPos) {
 				int newY = figPos.second + y;
 				if (newX < 8 && newX > 0 &&
 					newY < 8 && newY > 0){
-					const Figure* newFig = *board[pairToInd(newX, newY)];
+					Figure* newFig = (*board)[pairToInd(newX, newY)];
 					if (isEmpty(newFig) || isEnemy(fig, newFig))
 						out.push_back(Pos2D(newX, newY));
 				}
@@ -152,7 +153,7 @@ VectorOfPairs Logic::availableMovesForKnight(Pos2D figPos) {
 
 VectorOfPairs Logic::availableMovesForKing(Pos2D figPos) {
 	VectorOfPairs out;
-	const Figure* fig = *board[pairToInd(figPos)];
+	Figure* fig = (*board)[pairToInd(figPos)];
 	int options[3] = { -1, 0, 1};
 	for (int x : options) {
 		for (int y : options) {
@@ -161,7 +162,7 @@ VectorOfPairs Logic::availableMovesForKing(Pos2D figPos) {
 				int newY = figPos.second + y;
 				if (newX < 8 && newX > 0 &&
 					newY < 8 && newY > 0) {
-					const Figure* newFig = *board[pairToInd(newX, newY)];
+					Figure* newFig = (*board)[pairToInd(newX, newY)];
 					if (isEmpty(newFig) || isEnemy(fig, newFig))
 						out.push_back(Pos2D(newX, newY));
 				}

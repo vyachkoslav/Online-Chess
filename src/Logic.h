@@ -8,15 +8,15 @@ using VectorOfPairs = std::vector<Pos2D>;
 
 class Logic {
 public:
-	Logic(const Figure* (*board)[64]) { this->board = board; }
+	Logic(const std::vector<Figure*>*) { this->board = board; }
 
 	VectorOfPairs getAvailableMovesForFigure(Pos2D);
 
 private:
-	const Figure* (*board)[64];
+	const std::vector<Figure*>* board;
 
-	static bool inline isEmpty(const Figure*&);
-	static bool inline isEnemy(const Figure*&, const Figure*&);
+	static bool inline isEmpty(Figure* const &);
+	static bool inline isEnemy(Figure* const &, Figure* const &);
 	static Pos2D inline indToPair(int);
 	static int inline sgn(int);
 	static int inline pairToInd(int, int);

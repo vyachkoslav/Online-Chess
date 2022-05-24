@@ -15,10 +15,10 @@ Board::Board() {
 	auto figIter = std::begin(figures);
 	for (int i = 0; i < 64; i++) {
 		if (defaultPositions[i] != ' ') {
-			positions[i] = figIter++;
+			positions.push_back(figIter++);
 		}
 		else {
-			positions[i] = nullptr;
+			positions.push_back(nullptr);
 		}
 	}
 }
