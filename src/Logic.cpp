@@ -1,6 +1,7 @@
 #include "Logic.h"
 #include <stdexcept>
 
+
 using VectorOfPairs = std::vector<std::pair<int, int>>;
 
 VectorOfPairs Logic::getAvailableMovesForFigure(std::pair<int, int> figPos)
@@ -125,6 +126,29 @@ VectorOfPairs Logic::availableMovesForQueen(std::pair<int, int> figPos) {
 
 	out.insert(out.end(), rookMoves.begin(), rookMoves.end());
 	out.insert(out.end(), bishopMoves.begin(), bishopMoves.end());
+
+	return out;
+}
+
+VectorOfPairs Logic::availableMovesForKnight(std::pair<int, int> figPos) {
+	VectorOfPairs out;
+	const Figure** fig = board[pairToInd(figPos)];
+
+	int options[4] = { -2, -1, 1, 2 };
+	for (int x : options) {
+		for (int y : options) {
+			if (abs(x) != abs(y)) {
+				int newX = figPos.first + x;
+				int newY = figPos.second + y;
+				if (newX < 8 && newX > 0 &&
+					newY < 8 && newY > 0){
+					const Figure* newFig = *board[pairToInd(newX, newY)];
+					if (isEmpty(newFig) || isEnemy(newFig))
+						out.push_back(std::pair<int, int>(newX, newY));
+				}
+			}
+		}
+	}
 
 	return out;
 }
