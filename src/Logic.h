@@ -3,7 +3,7 @@
 #include "pch.h"
 #include "Game.h"
 
-using Pos2D = Pos2D;
+using Pos2D = std::pair<int, int>;
 using VectorOfPairs = std::vector<Pos2D>;
 
 class Logic {
