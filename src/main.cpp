@@ -4,6 +4,9 @@
 #include <AppCore/JSHelpers.h>
 
 #include <iostream>
+#include <sstream>
+#include "Game.h"
+#include "Logic.h"
 
 using namespace ultralight;
 
@@ -59,18 +62,30 @@ public:
         const String& url) {
 
         Ref<JSContext> context = caller->LockJSContext();
-
         JSContextRef ctx = context.get();
-
         JSStringRef name = JSStringCreateWithUTF8CString("OnTileClick");
-
         JSObjectRef func = JSObjectMakeFunctionWithCallback(ctx, name,
             &OnTileClick);
-
         JSObjectRef globalObj = JSContextGetGlobalObject(ctx);
-
         JSObjectSetProperty(ctx, globalObj, name, func, 0, 0);
         JSStringRelease(name);
+
+        Board board;
+        std::vector<Figure*> const& boardPositions = *board.getPositions();
+        Logic logic = Logic(&boardPositions);
+        overlay_->view()->EvaluateScript("init();");
+        for (int i = 0; i < 64; ++i) {
+            if (boardPositions[i]) {
+                
+                char name = boardPositions[i]->name;
+                std::ostringstream oss;
+                oss << "SetPosition('" << i % 8 << "', '" << i / 8 << "', '" << name << "');";
+
+                const ultralight::String command = oss.str().c_str();
+                overlay_->view()->EvaluateScript(command);
+            }
+        }
+        //SetPosition(global, { 1, 1 });
     }
 };
 

@@ -14,35 +14,52 @@
             display: inline-block;
             width: 50px;
             height: 50px;
-            background-color: saddlebrown;
+            background-color: white;
         }
         .tile:hover{
             cursor: pointer;
         }
     </style>
     <script>
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+        function SetPosition(x, y, name) {
+
+            var id = String(x) + String(y);
+            var tile = document.getElementById(id);
+            var imgUrl = "";
+            if (name == name.toUpperCase()) {
+                imgUrl = "images/" + name.toLowerCase() + "w.png";
+            }
+            else {
+                imgUrl = "images/" +  name + "b.png";
+            }
+            tile.style.cssText += "background-image: url('" + imgUrl + "'); background-size: 100%;";
+            OnTileClick(tile.style);
+        }
         function onPositionChoose(event) {
             var position = event.target.id;
             OnTileClick(position);
         }
         function init() {
-            var letters = "abcdefgh";
+            var letters = "01234567";
 
             var board = document.getElementById("board");
             for (let i = 0; i < 64; ++i) {
                 var tile = document.createElement("div");
                 tile.classList = "tile";
-                tile.id = letters[i % 8] + (8 - Math.floor(i / 8))
+                tile.id = String(i % 8) + (7 - Math.floor(i / 8))
                 tile.addEventListener("click", onPositionChoose)
                 if ((i + Math.floor(i / 8)) % 2 == 0) {
-                    tile.style = "background-color: black;"
+                    tile.style = "background-color: gray;"
                 }
                 board.appendChild(tile);
             }
         }
     </script>
 </head>
-<body onload="init();">
+<body>
     <div id="board"></div>
 </body>
 </html>
