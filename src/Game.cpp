@@ -9,7 +9,16 @@ bool Player::makeMove(const std::string &move) {
 }
 
 Board::Board() {
-	int i = 0;
-	for (auto el : positions)
-		el = defaultPositions[i++];
+	for (int i = 0; i < 32; i++)
+		figures[i].name = defaultFigures[i];
+
+	auto figIter = std::begin(figures);
+	for (int i = 0; i < 64; i++) {
+		if (defaultPositions[i] != ' ') {
+			positions[i] = figIter++;
+		}
+		else {
+			positions[i] = nullptr;
+		}
+	}
 }

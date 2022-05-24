@@ -2,6 +2,7 @@
 
 class Game;
 class Player;
+struct Figure;
 class Board;
 
 enum class Side { white, black };
@@ -22,14 +23,21 @@ private:
 	Side side;
 };
 
+struct Figure {
+	int moveCount = 0;
+	char name = '\0';
+};
+
 class Board {
 public:
 	Board();
 	Side getMovingSide() const { return movingSide; }
-	const char *getPositions() const { return positions; };
+	Figure* const *getPositions() { return positions; };
 
 private:
+	std::string defaultFigures = "RNBQKBNRPPPPPPPPpppppppprnbqkbnr";
 	std::string defaultPositions = "RNBQKBNRPPPPPPPP" + std::string(32, ' ') + "pppppppprnbqkbnr";
-	char positions[64];
+	Figure figures[32];
+	Figure* positions[64];
 	Side movingSide = Side::white;
 };
