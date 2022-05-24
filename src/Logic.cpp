@@ -150,5 +150,27 @@ VectorOfPairs Logic::availableMovesForKnight(std::pair<int, int> figPos) {
 		}
 	}
 
+	return out;  
+}
+
+VectorOfPairs Logic::availableMovesForKing(std::pair<int, int> figPos) {
+	VectorOfPairs out;
+	const Figure* fig = *board[pairToInd(figPos)];
+	int options[3] = { -1, 0, 1};
+	for (int x : options) {
+		for (int y : options) {
+			if (!(x == 0 && y == 0)) {
+				int newX = figPos.first + x;
+				int newY = figPos.second + y;
+				if (newX < 8 && newX > 0 &&
+					newY < 8 && newY > 0) {
+					const Figure* newFig = *board[pairToInd(newX, newY)];
+					if (isEmpty(newFig) || isEnemy(fig, newFig))
+						out.push_back(std::pair<int, int>(newX, newY));
+				}
+			}
+		}
+	}
+	
 	return out;
 }
