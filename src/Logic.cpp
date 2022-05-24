@@ -1,9 +1,6 @@
 #include "Logic.h"
 #include <stdexcept>
 
-using Pos2D = std::pair<int, int>;
-using VectorOfPairs = std::vector<Pos2D>;
-
 VectorOfPairs Logic::getAvailableMovesForFigure(Pos2D figPos)
 {
 	int index = figPos.first + figPos.second * 8;
