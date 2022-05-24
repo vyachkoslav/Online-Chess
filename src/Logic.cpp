@@ -53,7 +53,7 @@ VectorOfPairs Logic::availableMovesForPawn(std::pair<int, int> figPos) {
 	if (figPos.second == 7 || figPos.second == 0)
 		throw std::invalid_argument("Pawn shouldn't be at last row");
 	
-	std::vector<std::pair<int, int>> out;
+	VectorOfPairs out;
 	
 	int index = pairToInd(figPos.first, figPos.second);
 	const Figure** fig = board[index];
@@ -78,7 +78,7 @@ VectorOfPairs Logic::availableMovesForPawn(std::pair<int, int> figPos) {
 }
 
 VectorOfPairs Logic::availableMovesForRook(std::pair<int, int> figPos) {
-	std::vector<std::pair<int, int>> out;
+	VectorOfPairs out;
 
 	auto right = movesBeforeFigureOrEnd(figPos, [](auto pos) { return pos.first < 8; }, [](auto pos) { ++pos.first; });
 	auto left = movesBeforeFigureOrEnd(figPos, [](auto pos) { return pos.first > 0; }, [](auto pos) { --pos.first; });
@@ -94,7 +94,7 @@ VectorOfPairs Logic::availableMovesForRook(std::pair<int, int> figPos) {
 }
 
 VectorOfPairs Logic::availableMovesForBishop(std::pair<int, int> figPos) {
-	std::vector<std::pair<int, int>> out;
+	VectorOfPairs out;
 
 	auto rightDown = movesBeforeFigureOrEnd(figPos, 
 		[](auto pos) { return pos.first < 8 && pos.second < 8; }, 
@@ -118,7 +118,7 @@ VectorOfPairs Logic::availableMovesForBishop(std::pair<int, int> figPos) {
 }
 
 VectorOfPairs Logic::availableMovesForQueen(std::pair<int, int> figPos) {
-	std::vector<std::pair<int, int>> out;
+	VectorOfPairs out;
 
 	VectorOfPairs rookMoves = availableMovesForRook(figPos);
 	VectorOfPairs bishopMoves = availableMovesForBishop(figPos);
