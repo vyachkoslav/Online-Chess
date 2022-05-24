@@ -32,6 +32,23 @@ int inline Logic::sgn(int val) {
 	return (0 < val) - (val < 0);
 }
 
+VectorOfPairs Logic::movesBeforeFigureOrEnd(std::pair<int,int> figPos, bool (*filter)(std::pair<int,int>), void (*iter)(std::pair<int,int>&)) {
+	VectorOfPairs out;
+	const Figure* fig = *board[pairToInd(figPos)];
+	iter(figPos);
+	for (std::pair<int,int> pos = figPos; filter(pos); iter(pos)) {
+		if (isEnemy(fig, *board[pairToInd(pos)])) {
+			out.push_back(std::pair<int, int>(pos));
+			break;
+		}
+		if (isEmpty(*board[pairToInd(pos)]))
+			out.push_back(std::pair<int, int>(pos));
+		else
+			break;
+	}
+	return out;
+}
+
 VectorOfPairs Logic::availableMovesForPawn(std::pair<int, int> figPos) {
 	if (figPos.second == 7 || figPos.second == 0)
 		throw std::invalid_argument("Pawn shouldn't be at last row");
@@ -62,43 +79,52 @@ VectorOfPairs Logic::availableMovesForPawn(std::pair<int, int> figPos) {
 
 VectorOfPairs Logic::availableMovesForRook(std::pair<int, int> figPos) {
 	std::vector<std::pair<int, int>> out;
-	const Figure* fig = *board[pairToInd(figPos)];
 
-	for (int x = figPos.first + 1; x < 8; x++) {					//right
-		if(isEmpty(*board[pairToInd(x, figPos.second)]))
-			out.push_back(std::pair<int, int>(x, figPos.second));
-		if (isEnemy(fig, *board[pairToInd(x, figPos.second)])) {
-			out.push_back(std::pair<int, int>(x, figPos.second));
-			break;
-		}
-	}
+	auto right = movesBeforeFigureOrEnd(figPos, [](auto pos) { return pos.first < 8; }, [](auto pos) { ++pos.first; });
+	auto left = movesBeforeFigureOrEnd(figPos, [](auto pos) { return pos.first > 0; }, [](auto pos) { --pos.first; });
+	auto down = movesBeforeFigureOrEnd(figPos, [](auto pos) { return pos.second < 8; }, [](auto pos) { ++pos.second; });
+	auto up = movesBeforeFigureOrEnd(figPos, [](auto pos) { return pos.second > 0; }, [](auto pos) { --pos.second; });
 
-	for (int x = figPos.first - 1; x > 0; x--) {					//left
-		if (isEmpty(*board[pairToInd(x, figPos.second)]))
-			out.push_back(std::pair<int, int>(x, figPos.second));
-		if (isEnemy(fig, *board[pairToInd(x, figPos.second)])) {
-			out.push_back(std::pair<int, int>(x, figPos.second));
-			break;
-		}
-	}
+	out.insert(out.end(), right.begin(), right.end());
+	out.insert(out.end(), left.begin(), left.end());
+	out.insert(out.end(), down.begin(), down.end());
+	out.insert(out.end(), up.begin(), up.end());
 
-	for (int y = figPos.second + 1; y < 8; y++) {					//down
-		if (isEmpty(*board[pairToInd(figPos.first, y)]))
-			out.push_back(std::pair<int, int>(figPos.first, y));
-		if (isEnemy(fig, *board[pairToInd(figPos.first, y)])){
-			out.push_back(std::pair<int, int>(figPos.first, y));
-			break;
-		}
-	}
+	return out;
+}
 
-	for (int y = figPos.second - 1; y > 0; y--) {					//up
-		if (isEmpty(*board[pairToInd(figPos.first, y)]))
-			out.push_back(std::pair<int, int>(figPos.first, y));
-		if (isEnemy(fig, *board[pairToInd(figPos.first, y)])) {
-			out.push_back(std::pair<int, int>(figPos.first, y));
-			break;
-		}
-	}
+VectorOfPairs Logic::availableMovesForBishop(std::pair<int, int> figPos) {
+	std::vector<std::pair<int, int>> out;
+
+	auto rightDown = movesBeforeFigureOrEnd(figPos, 
+		[](auto pos) { return pos.first < 8 && pos.second < 8; }, 
+		[](auto pos) { ++pos.first, ++pos.second; });
+	auto leftUp = movesBeforeFigureOrEnd(figPos,
+		[](auto pos) { return pos.first > 0 && pos.second > 0; }, 
+		[](auto pos) { --pos.first, --pos.second; });
+	auto rightUp = movesBeforeFigureOrEnd(figPos, 
+		[](auto pos) { return pos.first < 8 && pos.second > 0; }, 
+		[](auto pos) { ++pos.first, --pos.second; });
+	auto leftDown = movesBeforeFigureOrEnd(figPos, 
+		[](auto pos) { return pos.first > 0 && pos.second < 8; }, 
+		[](auto pos) {  --pos.first, ++pos.second; });
+
+	out.insert(out.end(), rightDown.begin(), rightDown.end());
+	out.insert(out.end(), leftUp.begin(), leftUp.end());
+	out.insert(out.end(), rightUp.begin(), rightUp.end());
+	out.insert(out.end(), leftDown.begin(), leftDown.end());
+
+	return out;
+}
+
+VectorOfPairs Logic::availableMovesForQueen(std::pair<int, int> figPos) {
+	std::vector<std::pair<int, int>> out;
+
+	VectorOfPairs rookMoves = availableMovesForRook(figPos);
+	VectorOfPairs bishopMoves = availableMovesForBishop(figPos);
+
+	out.insert(out.end(), rookMoves.begin(), rookMoves.end());
+	out.insert(out.end(), bishopMoves.begin(), bishopMoves.end());
 
 	return out;
 }

@@ -18,7 +18,8 @@ private:
 	static int inline sgn(int);
 	static int inline pairToInd(int, int);
 	static int inline pairToInd(std::pair<int, int>);
-
+	
+	std::vector<std::pair<int, int>> movesBeforeFigureOrEnd(std::pair<int, int>, bool (*)(std::pair<int,int>), void (*)(std::pair<int, int>&));
 	std::vector<std::pair<int, int>> availableMovesForPawn(std::pair<int, int>);
 	std::vector<std::pair<int, int>> availableMovesForRook(std::pair<int, int>);
 	std::vector<std::pair<int, int>> availableMovesForKnight(std::pair<int, int>);
