@@ -82,10 +82,11 @@ public:
                 for (const auto& action : move) {
                     if (action.pos == match_info::selectedPos && action.dest == newPos) {
                         for (const auto& action : move) {
-                            match_info::board.makeMove(action, match_info::board.getMovingSide());
-                            UpdatePosition(action.pos.first, action.pos.second, ' ');
-                            UpdatePosition(action.dest.first, action.dest.second, action.name);
-                            hasMove = true;
+                            if (match_info::board.makeMove(action, match_info::board.getMovingSide())) {
+                                UpdatePosition(action.pos.first, action.pos.second, ' ');
+                                UpdatePosition(action.dest.first, action.dest.second, action.name);
+                                hasMove = true;
+                            }
                         }
                         break;
                     }

@@ -10,6 +10,15 @@
             position: relative;
             display: inline-block;
         }
+        .available {
+            background-image: url('images/mb.png');
+            background-size: 100%;
+        }
+        .figure {
+            width: 50px;
+            height: 50px;
+            background-size: 100%;
+        }
         .tile {
             display: inline-block;
             width: 50px;
@@ -33,15 +42,19 @@
             else {
                 imgUrl = "images/" +  name + "b.png";
             }
+            tile.classList.remove("available");
             if (name === ' ') {
-                tile.style.backgroundImage = "none";
+                tile.children[0].style.backgroundImage = "none";
+            }
+            else if (name === 'm') {
+                tile.classList.add("available");
             }
             else {
-                tile.style.backgroundImage = "url('" + imgUrl + "')";
+                tile.children[0].style.backgroundImage = "url('" + imgUrl + "')";
             }
         }
         function onPositionChoose(event) {
-            var position = event.target.id;
+            var position = event.target.parentElement.id;
             OnTileClick(position);
         }
         function init() {
@@ -50,13 +63,16 @@
             var board = document.getElementById("board");
             for (let i = 0; i < 64; ++i) {
                 var tile = document.createElement("div");
-                tile.classList = "tile";
+                var figure = document.createElement("div");
+                tile.classList.add("tile");
+                figure.classList = "figure";
                 tile.id = String(i % 8) + (7 - Math.floor(i / 8))
                 tile.addEventListener("click", onPositionChoose)
                 if ((i + Math.floor(i / 8)) % 2 == 0) {
-                    tile.style.cssText = "background-color: gray;"
+                    tile.style = "background-color: gray;"
                 }
                 board.appendChild(tile);
+                tile.appendChild(figure);
             }
         }
     </script>
