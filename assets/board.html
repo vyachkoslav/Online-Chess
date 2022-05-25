@@ -15,6 +15,7 @@
             width: 50px;
             height: 50px;
             background-color: white;
+            background-size: 100%;
         }
         .tile:hover{
             cursor: pointer;
@@ -33,10 +34,10 @@
                 imgUrl = "images/" +  name + "b.png";
             }
             if (name === ' ') {
-                tile.style.cssText += "background-image: none; background-size: 50%;";
+                tile.style.backgroundImage = "none";
             }
             else {
-                tile.style.cssText += "background-image: url('" + imgUrl + "'); background-size: 100%;";
+                tile.style.backgroundImage = "url('" + imgUrl + "')";
             }
         }
         function onPositionChoose(event) {
