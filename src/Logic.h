@@ -22,7 +22,7 @@ private:
 	static int inline pairToInd(int, int);
 	static int inline pairToInd(Pos2D);
 	
-	VectorOfPairs movesBeforeFigureOrEnd(Pos2D, bool (*)(Pos2D), void (*)(Pos2D&));
+	VectorOfPairs movesBeforeFigureOrEnd(Pos2D, bool (*)(Pos2D), void (*)(Pos2D*));
 	VectorOfPairs availableMovesForPawn(Pos2D);
 	VectorOfPairs availableMovesForRook(Pos2D);
 	VectorOfPairs availableMovesForKnight(Pos2D);

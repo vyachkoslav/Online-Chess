@@ -49,20 +49,23 @@ int inline Logic::sgn(int val) {
 	return (0 < val) - (val < 0);
 }
 
-VectorOfPairs Logic::movesBeforeFigureOrEnd(Pos2D figPos, bool (*filter)(Pos2D), void (*iter)(Pos2D&)) {
+VectorOfPairs Logic::movesBeforeFigureOrEnd(Pos2D figPos, bool (*filter)(Pos2D), void (*iter)(Pos2D*)) {
 	VectorOfPairs out;
 	Figure* fig = (*board)[pairToInd(figPos)];
-	iter(figPos);
-	for (Pos2D pos = figPos; filter(pos); iter(pos)) {
+	iter(&figPos);
+	for (Pos2D pos = figPos; filter(pos); iter(&pos)) {
 		Figure* other = (*board)[pairToInd(pos)];
-		if (isEnemy(fig, (*board)[pairToInd(pos)])) {
+		if (isEmpty(other)) {
+			out.push_back(Pos2D(pos));
+		}
+		else if (isEnemy(fig, (*board)[pairToInd(pos)])) {
 			out.push_back(Pos2D(pos));
 			break;
 		}
-		if (isEmpty(other))
-			out.push_back(Pos2D(pos));
-		else
+		else {
 			break;
+		}
+		
 	}
 	return out;
 }
@@ -98,10 +101,10 @@ VectorOfPairs Logic::availableMovesForPawn(Pos2D figPos) {
 VectorOfPairs Logic::availableMovesForRook(Pos2D figPos) {
 	VectorOfPairs out;
 
-	auto right = movesBeforeFigureOrEnd(figPos, [](auto pos) { return pos.first < 8; }, [](auto pos) { ++pos.first; });
-	auto left = movesBeforeFigureOrEnd(figPos, [](auto pos) { return pos.first > 0; }, [](auto pos) { --pos.first; });
-	auto down = movesBeforeFigureOrEnd(figPos, [](auto pos) { return pos.second < 8; }, [](auto pos) { ++pos.second; });
-	auto up = movesBeforeFigureOrEnd(figPos, [](auto pos) { return pos.second > 0; }, [](auto pos) { --pos.second; });
+	auto right = movesBeforeFigureOrEnd(figPos, [](auto pos) { return pos.first < 8; }, [](Pos2D* pos) { ++pos->first; });
+	auto left = movesBeforeFigureOrEnd(figPos, [](auto pos) { return pos.first >= 0; }, [](Pos2D* pos) { --pos->first; });
+	auto down = movesBeforeFigureOrEnd(figPos, [](auto pos) { return pos.second < 8; }, [](Pos2D* pos) { ++pos->second; });
+	auto up = movesBeforeFigureOrEnd(figPos, [](auto pos) { return pos.second >= 0; }, [](Pos2D* pos) { --pos->second; });
 
 	out.insert(out.end(), right.begin(), right.end());
 	out.insert(out.end(), left.begin(), left.end());
@@ -116,16 +119,16 @@ VectorOfPairs Logic::availableMovesForBishop(Pos2D figPos) {
 
 	auto rightDown = movesBeforeFigureOrEnd(figPos, 
 		[](auto pos) { return pos.first < 8 && pos.second < 8; }, 
-		[](auto pos) { ++pos.first, ++pos.second; });
+		[](auto pos) { ++pos->first, ++pos->second; });
 	auto leftUp = movesBeforeFigureOrEnd(figPos,
-		[](auto pos) { return pos.first > 0 && pos.second > 0; }, 
-		[](auto pos) { --pos.first, --pos.second; });
+		[](auto pos) { return pos.first >= 0 && pos.second >= 0; }, 
+		[](auto pos) { --pos->first, --pos->second; });
 	auto rightUp = movesBeforeFigureOrEnd(figPos, 
-		[](auto pos) { return pos.first < 8 && pos.second > 0; }, 
-		[](auto pos) { ++pos.first, --pos.second; });
+		[](auto pos) { return pos.first < 8 && pos.second >= 0; }, 
+		[](auto pos) { ++pos->first, --pos->second; });
 	auto leftDown = movesBeforeFigureOrEnd(figPos, 
-		[](auto pos) { return pos.first > 0 && pos.second < 8; }, 
-		[](auto pos) {  --pos.first, ++pos.second; });
+		[](auto pos) { return pos.first >= 0 && pos.second < 8; }, 
+		[](auto pos) {  --pos->first, ++pos->second; });
 
 	out.insert(out.end(), rightDown.begin(), rightDown.end());
 	out.insert(out.end(), leftUp.begin(), leftUp.end());
