@@ -3,8 +3,8 @@
     <style>
         html, body {
             margin: 0;
-            width: 400px;
-            height: 400px;
+            width: 100%;
+            height: 100%;
         }
         #board {
             position: relative;
@@ -28,6 +28,34 @@
         }
         .tile:hover{
             cursor: pointer;
+        }
+
+        .tab {
+            overflow: hidden;
+            width: 400px;
+        }
+        .tab button {
+            background-color: #ccc;
+            float: left;
+            outline: none;
+            cursor: pointer;
+            padding: 4px 40px;
+            transition: 0.3s;
+            font-size: 12px;
+            margin: 0;
+        }
+        .tab button:hover {
+            background-color: #ddd;
+        }
+        .tab button.active {
+            border-bottom: 1px solid #fff;
+            background-color: #fff;
+        }
+        .tabcontent {
+            width: 400px;
+            height: 400px;
+            display: none;
+            border-top: none;
         }
     </style>
     <script>
@@ -74,10 +102,34 @@
                 board.appendChild(tile);
                 tile.appendChild(figure);
             }
+            openTab("Menu");
+        }
+        function openTab(tabName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(tabName).style.display = "block";
+            document.getElementsByName(tabName)[0].className += " active";
         }
     </script>
 </head>
-<body>
-    <div id="board"></div>
+<body >
+        <div class="tab">
+            <button name="Menu" class="tablinks" onclick="openTab('Menu')">Menu</button>
+            <button name="Game" class="tablinks" onclick="openTab('Game')">Game</button>
+        </div>
+
+        <div id="Menu" class="tabcontent">
+            <h3>Menu</h3>
+        </div>
+        <div id="Game" class="tabcontent">
+            <div id="board"></div>
+        </div>
 </body>
 </html>

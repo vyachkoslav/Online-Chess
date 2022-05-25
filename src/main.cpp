@@ -47,14 +47,15 @@ std::string JSStringToString(JSContextRef ctx, JSValueRef str) {
 
 
 class ChessApp : public LoadListener {
-
+    RefPtr<Overlay> overlay_;
 public:
     ChessApp(Ref<Window> win) {
-        match_info::overlay_ = Overlay::Create(win, win->width(), win->height(), 0, 0);
+        overlay_ = Overlay::Create(win, win->width(), win->height(), 0, 0);
 
-        match_info::overlay_->view()->set_load_listener(this);
+        overlay_->view()->set_load_listener(this);
 
-        match_info::overlay_->view()->LoadURL("file:///board.html");
+        overlay_->view()->LoadURL("file:///board.html");
+        match_info::overlay_ = overlay_;
     }
 
     virtual ~ChessApp() {}
@@ -148,7 +149,7 @@ public:
 
 int main() {
     auto app = App::Create();
-    auto window = Window::Create(app->main_monitor(), 400, 400, false, kWindowFlags_Titled);
+    auto window = Window::Create(app->main_monitor(), 450, 450, false, kWindowFlags_Titled);
 
     window->SetTitle("Online Chess");
 
