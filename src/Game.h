@@ -29,6 +29,12 @@ struct Figure {
 	bool passant = false;
 };
 
+struct Move {
+	std::pair<int, int> pos;
+	std::pair<int, int> dest;
+	char name;
+};
+
 class Board {
 public:
 	Board();
