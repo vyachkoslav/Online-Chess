@@ -190,8 +190,8 @@ VectorOfPairs Logic::availableMovesForKing(Pos2D figPos) {
 			if (!(x == 0 && y == 0)) {
 				int newX = figPos.first + x;
 				int newY = figPos.second + y;
-				if (newX < 8 && newX > 0 &&
-					newY < 8 && newY > 0) {
+				if (newX < 8 && newX >= 0 &&
+					newY < 8 && newY >= 0) {
 					Figure* newFig = (*board)[pairToInd(newX, newY)];
 					if (isEmpty(newFig) || isEnemy(fig, newFig))
 						out.push_back(Pos2D(newX, newY));
@@ -199,6 +199,31 @@ VectorOfPairs Logic::availableMovesForKing(Pos2D figPos) {
 			}
 		}
 	}
-	
+	if (fig->moveCount == 0) {
+		Figure* leftRook = (*board)[pairToInd(figPos.first - 4, figPos.second)];
+		Figure* rightRook = (*board)[pairToInd(figPos.first + 3, figPos.second)];
+		if (!isEmpty(leftRook) && leftRook->moveCount == 0) {
+			bool isFree = true;
+			for (int i = 1; i < 4; ++i) {
+				if (!isEmpty((*board)[pairToInd(i, figPos.second)])) {
+					isFree = false;
+					break;
+				}
+			}
+			if (isFree)
+				out.push_back(Pos2D(2, figPos.second));
+		}
+		if (!isEmpty(rightRook) && rightRook->moveCount == 0) {
+			bool isFree = true;
+			for (int i = 5; i < 7; ++i) {
+				if (!isEmpty((*board)[pairToInd(i, figPos.second)])) {
+					isFree = false;
+					break;
+				}
+			}
+			if (isFree)
+				out.push_back(Pos2D(6, figPos.second));
+		}
+	}
 	return out;
 }
