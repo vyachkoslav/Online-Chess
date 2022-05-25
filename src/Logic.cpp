@@ -83,22 +83,24 @@ VectorOfPairs Logic::availableMovesForPawn(Pos2D figPos) {
 
 	if (isEmpty(fig[frontCell])) {
 		out.push_back(indToPair(index + frontCell));
-		if (((std::isupper(name) && index / 8 == 1) ||								// is at start pos
-			(std::islower(name) && index / 8 == 6)) ||
+		if (((std::isupper(name) && figPos.second == 1) ||								// is at start pos
+			(std::islower(name) && figPos.second == 6)) &&
 			isEmpty(fig[frontCell * 2])) {
 			out.push_back(indToPair(index + frontCell * 2));
 		}
 	}
-	if (figPos.first != 0 && !isEmpty(fig[-1]) && isEnemy(*fig, fig[-1]) && fig[-1]->passant) {
+	bool onLeftEdge = frontCell > 0 ? figPos.first == 0 : figPos.first == 7;
+	bool onRightEdge = frontCell > 0 ? figPos.first == 7 : figPos.first == 0;;
+	if (!onLeftEdge && !isEmpty(fig[-1]) && isEnemy(*fig, fig[-1]) && fig[-1]->passant) { // passants
 		out.push_back(indToPair(index + frontCell - sgn(frontCell)));
 	}
-	if (figPos.first != 7 && !isEmpty(fig[1]) && isEnemy(*fig, fig[1]) && fig[1]->passant) {
+	if (!onRightEdge && !isEmpty(fig[1]) && isEnemy(*fig, fig[1]) && fig[1]->passant) {
 		out.push_back(indToPair(index + frontCell + sgn(frontCell)));
 	}
-	if (figPos.first != 0 && isEnemy(*fig, fig[frontCell - sgn(frontCell)])) { // not on edge and diag left is enemy
+	if (!onLeftEdge && isEnemy(*fig, fig[frontCell - sgn(frontCell)])) { // not on edge and diag left is enemy
 		out.push_back(indToPair(index + frontCell - sgn(frontCell)));
 	}
-	if (figPos.first != 7 && isEnemy(*fig, fig[frontCell + sgn(frontCell)])) { // not on edge and diag right is enemy
+	if (!onRightEdge && isEnemy(*fig, fig[frontCell + sgn(frontCell)])) { // not on edge and diag right is enemy
 		out.push_back(indToPair(index + frontCell + sgn(frontCell)));
 	}
 	return out;
