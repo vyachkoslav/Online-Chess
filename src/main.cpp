@@ -16,6 +16,8 @@ namespace match_info {
     std::vector<Figure*> const& positions = *board.getPositions();
     Logic logic = Logic(&positions);
     std::pair<int, int> selectedPos;
+    Player thisPlayer = Player(Side::white);
+    Player enemyPlayer = Player(Side::black);
 }
 
 std::string JSStringToString(JSContextRef ctx, JSValueRef str) {
@@ -60,6 +62,7 @@ public:
     static JSValueRef OnTileClick(JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef* exception) {
 
         std::string cpp_string = JSStringToString(ctx, arguments[0]);
+        std::cout << cpp_string << std::endl;
         if(cpp_string.length() > 2)
             return JSValueMakeNull(ctx);
         std::pair<int, int> newPos;
@@ -71,9 +74,11 @@ public:
         Figure* newFig = match_info::positions[newIndex];
 
         if (selectedFigure != newFig) {
+            ClearBoard();
+
             auto moves = match_info::logic.getAvailableMovesForFigure(match_info::selectedPos);
             bool hasMove = false;
-            for (auto pos : moves) {
+            for (const auto &pos : moves) {
                 std::cout << pos.first << " " << pos.second << std::endl;
                 if (pos == newPos) {
                     match_info::board.makeMove(match_info::selectedPos, pos, match_info::board.getMovingSide());
@@ -83,10 +88,13 @@ public:
                     break;
                 }
             }
-            if (!hasMove)
+            if (!hasMove) {
                 match_info::selectedPos = newPos;
+                for (const auto &pos : match_info::logic.getAvailableMovesForFigure(match_info::selectedPos)) {
+                    UpdatePosition(pos.first, pos.second, 'm');
+                }
+            }
         }
-        std::cout << cpp_string << std::endl;
 
         return JSValueMakeNull(ctx);
     }
@@ -112,10 +120,18 @@ public:
             }
         }
     }
+    static void ClearBoard() {
+        for (int i = 0; i < 64; ++i) {
+            char name = ' ';
+            if (match_info::positions[i]) {
+                name = match_info::positions[i]->name;
+            }
+            UpdatePosition(i % 8, i / 8, name);
+        }
+    }
     static void UpdatePosition(int x, int y, char name) {
         std::ostringstream oss;
         oss << "SetPosition('" << x << "', '" << y << "', '" << name << "');";
-        std::cout << oss.str();
         const ultralight::String command = oss.str().c_str();
         match_info::overlay_->view()->EvaluateScript(command);
     }

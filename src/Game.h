@@ -26,6 +26,7 @@ private:
 struct Figure {
 	int moveCount = 0;
 	char name = '\0';
+	bool passant = false;
 };
 
 class Board {
@@ -36,6 +37,7 @@ public:
 	std::vector<Figure*>* getPositions() { return &positions; };
 
 private:
+	void clearPassants();
 	std::string defaultFigures = "RNBQKBNRPPPPPPPPpppppppprnbqkbnr"; // Upper white
 	std::string defaultPositions = "RNBQKBNRPPPPPPPP" + std::string(32, ' ') + "pppppppprnbqkbnr";
 	Figure figures[32];

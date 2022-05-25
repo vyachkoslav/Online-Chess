@@ -23,12 +23,24 @@ Board::Board() {
 	}
 }
 
+void Board::clearPassants() {
+	for (Figure fig : figures) {
+		fig.passant = false;
+	}
+}
+
 bool Board::makeMove(const std::pair<int, int>& x, const std::pair<int, int>& y, Side side) {
 	if (side == movingSide) {
+		clearPassants();
 		positions[y.first + y.second * 8] = positions[x.first + x.second * 8];
 		positions[y.first + y.second * 8]->moveCount++;
 		positions[x.first + x.second * 8] = nullptr;
 		movingSide = movingSide == Side::white ? Side::black : Side::white;
+
+		if (std::tolower(positions[y.first + y.second * 8]->name) == 'p' && abs(y.second - x.second) == 2) {
+			positions[y.first + y.second * 8]->passant = true;
+		}
+
 		return true;
 	}
 	return false;

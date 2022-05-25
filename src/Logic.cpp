@@ -34,7 +34,7 @@ bool inline Logic::isEmpty(Figure* const & x) {
 	return !x;
 }
 bool inline Logic::isEnemy(Figure* const & x, Figure* const & y) {
-	return (isEmpty(x) || isEmpty(y)) || std::islower(x->name) != std::islower(y->name);
+	return !(isEmpty(x) || isEmpty(y)) && std::islower(x->name) != std::islower(y->name);
 }
 Pos2D inline Logic::indToPair(int i) {
 	return Pos2D(i % 8, i / 8);
@@ -88,6 +88,12 @@ VectorOfPairs Logic::availableMovesForPawn(Pos2D figPos) {
 			isEmpty(fig[frontCell * 2])) {
 			out.push_back(indToPair(index + frontCell * 2));
 		}
+	}
+	if (figPos.first != 0 && !isEmpty(fig[-1]) && isEnemy(*fig, fig[-1]) && fig[-1]->passant) {
+		out.push_back(indToPair(index + frontCell - sgn(frontCell)));
+	}
+	if (figPos.first != 7 && !isEmpty(fig[1]) && isEnemy(*fig, fig[1]) && fig[1]->passant) {
+		out.push_back(indToPair(index + frontCell + sgn(frontCell)));
 	}
 	if (figPos.first != 0 && isEnemy(*fig, fig[frontCell - sgn(frontCell)])) { // not on edge and diag left is enemy
 		out.push_back(indToPair(index + frontCell - sgn(frontCell)));
@@ -160,8 +166,8 @@ VectorOfPairs Logic::availableMovesForKnight(Pos2D figPos) {
 			if (abs(x) != abs(y)) {
 				int newX = figPos.first + x;
 				int newY = figPos.second + y;
-				if (newX < 8 && newX > 0 &&
-					newY < 8 && newY > 0){
+				if (newX < 8 && newX >= 0 &&
+					newY < 8 && newY >= 0){
 					Figure* newFig = (*board)[pairToInd(newX, newY)];
 					if (isEmpty(newFig) || isEnemy(fig, newFig))
 						out.push_back(Pos2D(newX, newY));
