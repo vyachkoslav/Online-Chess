@@ -74,7 +74,7 @@ public:
         Figure* newFig = match_info::positions[newIndex];
 
         if (selectedFigure != newFig) {
-            ClearBoard();
+            RefreshBoard();
 
             auto moves = match_info::logic.getAvailableMovesForFigure(match_info::selectedPos);
             bool hasMove = false;
@@ -120,7 +120,7 @@ public:
             }
         }
     }
-    static void ClearBoard() {
+    static void RefreshBoard() {
         for (int i = 0; i < 64; ++i) {
             char name = ' ';
             if (match_info::positions[i]) {
