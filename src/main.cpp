@@ -10,6 +10,14 @@
 
 using namespace ultralight;
 
+namespace match_info {
+    RefPtr<Overlay> overlay_;
+    Board board = Board();
+    std::vector<Figure*> const& positions = *board.getPositions();
+    Logic logic = Logic(&positions);
+    std::pair<int, int> selectedPos;
+}
+
 std::string JSStringToString(JSContextRef ctx, JSValueRef str) {
     JSValueRef exc = nullptr;
     JSStringRef string_ref = JSValueToStringCopy(ctx, str, &exc);
@@ -34,23 +42,50 @@ std::string JSStringToString(JSContextRef ctx, JSValueRef str) {
     return ret;
 }
 
+
+
 class ChessApp : public LoadListener {
-    RefPtr<Overlay> overlay_;
+
 public:
     ChessApp(Ref<Window> win) {
-        overlay_ = Overlay::Create(win, win->width(), win->height(), 0, 0);
+        match_info::overlay_ = Overlay::Create(win, win->width(), win->height(), 0, 0);
 
-        overlay_->view()->set_load_listener(this);
+        match_info::overlay_->view()->set_load_listener(this);
 
-        overlay_->view()->LoadURL("file:///board.html");
+        match_info::overlay_->view()->LoadURL("file:///board.html");
     }
 
     virtual ~ChessApp() {}
 
     static JSValueRef OnTileClick(JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef* exception) {
-        
+
         std::string cpp_string = JSStringToString(ctx, arguments[0]);
-        
+        if(cpp_string.length() > 2)
+            return JSValueMakeNull(ctx);
+        std::pair<int, int> newPos;
+        newPos.first = cpp_string[0] - '0';
+        newPos.second = cpp_string[1] - '0';
+        int selectedIndex = match_info::selectedPos.first + match_info::selectedPos.second * 8;
+        int newIndex = newPos.first + newPos.second * 8;
+        Figure* selectedFigure = match_info::positions[selectedIndex];
+        Figure* newFig = match_info::positions[newIndex];
+
+        if (selectedFigure != newFig) {
+            auto moves = match_info::logic.getAvailableMovesForFigure(match_info::selectedPos);
+            bool hasMove = false;
+            for (auto pos : moves) {
+                std::cout << pos.first << " " << pos.second << std::endl;
+                if (pos == newPos) {
+                    match_info::board.makeMove(match_info::selectedPos, pos, match_info::board.getMovingSide());
+                    UpdatePosition(match_info::selectedPos.first, match_info::selectedPos.second, ' ');
+                    UpdatePosition(pos.first, pos.second, selectedFigure->name);
+                    hasMove = true;
+                    break;
+                }
+            }
+            if (!hasMove)
+                match_info::selectedPos = newPos;
+        }
         std::cout << cpp_string << std::endl;
 
         return JSValueMakeNull(ctx);
@@ -70,22 +105,19 @@ public:
         JSObjectSetProperty(ctx, globalObj, name, func, 0, 0);
         JSStringRelease(name);
 
-        Board board;
-        std::vector<Figure*> const& boardPositions = *board.getPositions();
-        Logic logic = Logic(&boardPositions);
-        overlay_->view()->EvaluateScript("init();");
+        match_info::overlay_->view()->EvaluateScript("init();");
         for (int i = 0; i < 64; ++i) {
-            if (boardPositions[i]) {
-                
-                char name = boardPositions[i]->name;
-                std::ostringstream oss;
-                oss << "SetPosition('" << i % 8 << "', '" << i / 8 << "', '" << name << "');";
-
-                const ultralight::String command = oss.str().c_str();
-                overlay_->view()->EvaluateScript(command);
+            if (match_info::positions[i]) {
+                UpdatePosition(i % 8, i / 8, match_info::positions[i]->name);
             }
         }
-        //SetPosition(global, { 1, 1 });
+    }
+    static void UpdatePosition(int x, int y, char name) {
+        std::ostringstream oss;
+        oss << "SetPosition('" << x << "', '" << y << "', '" << name << "');";
+        std::cout << oss.str();
+        const ultralight::String command = oss.str().c_str();
+        match_info::overlay_->view()->EvaluateScript(command);
     }
 };
 

@@ -5,10 +5,29 @@ VectorOfPairs Logic::getAvailableMovesForFigure(Pos2D figPos)
 {
 	int index = figPos.first + figPos.second * 8;
 	const Figure* fig = (*board)[index];
-	switch (fig->name) {
-	case 'P':
+	if (!fig)
+		return VectorOfPairs();
+	switch (std::tolower(fig->name)) {
+	case 'p':
 		return availableMovesForPawn(figPos);
+		break;
+	case 'r':
+		return availableMovesForRook(figPos);
+		break;
+	case 'n':
+		return availableMovesForKnight(figPos);
+		break;
+	case 'b':
+		return availableMovesForBishop(figPos);
+		break;
+	case 'q':
+		return availableMovesForQueen(figPos);
+		break;
+	case 'k':
+		return availableMovesForKing(figPos);
+		break;
 	}
+	
 }
 
 bool inline Logic::isEmpty(Figure* const & x) {

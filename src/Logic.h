@@ -8,7 +8,7 @@ using VectorOfPairs = std::vector<Pos2D>;
 
 class Logic {
 public:
-	Logic(const std::vector<Figure*>*) { this->board = board; }
+	Logic(const std::vector<Figure*> *board) { this->board = board; }
 
 	VectorOfPairs getAvailableMovesForFigure(Pos2D);
 

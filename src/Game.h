@@ -17,7 +17,7 @@ class Player {
 public:
 	Player(Side);
 	Side getSide() const { return side; }
-	bool makeMove(const std::string &);
+	bool makeMove(const std::pair<int,int> &, const std::pair<int, int>&, Board &);
 
 private:
 	Side side;
@@ -32,7 +32,8 @@ class Board {
 public:
 	Board();
 	Side getMovingSide() const { return movingSide; }
-	std::vector<Figure*> * getPositions() { return &positions; };
+	bool makeMove(const std::pair<int, int>&, const std::pair<int, int>&, Side);
+	std::vector<Figure*>* getPositions() { return &positions; };
 
 private:
 	std::string defaultFigures = "RNBQKBNRPPPPPPPPpppppppprnbqkbnr"; // Upper white

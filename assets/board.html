@@ -21,9 +21,6 @@
         }
     </style>
     <script>
-        function sleep(ms) {
-            return new Promise(resolve => setTimeout(resolve, ms));
-        }
         function SetPosition(x, y, name) {
 
             var id = String(x) + String(y);
@@ -35,8 +32,12 @@
             else {
                 imgUrl = "images/" +  name + "b.png";
             }
-            tile.style.cssText += "background-image: url('" + imgUrl + "'); background-size: 100%;";
-            OnTileClick(tile.style);
+            if (name === ' ') {
+                tile.style.cssText += "background-image: none; background-size: 50%;";
+            }
+            else {
+                tile.style.cssText += "background-image: url('" + imgUrl + "'); background-size: 100%;";
+            }
         }
         function onPositionChoose(event) {
             var position = event.target.id;
@@ -52,7 +53,7 @@
                 tile.id = String(i % 8) + (7 - Math.floor(i / 8))
                 tile.addEventListener("click", onPositionChoose)
                 if ((i + Math.floor(i / 8)) % 2 == 0) {
-                    tile.style = "background-color: gray;"
+                    tile.style.cssText = "background-color: gray;"
                 }
                 board.appendChild(tile);
             }
