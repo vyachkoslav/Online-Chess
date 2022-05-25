@@ -148,7 +148,7 @@ public:
 
 int main() {
     auto app = App::Create();
-    auto window = Window::Create(app->main_monitor(), 500, 500, false, kWindowFlags_Titled);
+    auto window = Window::Create(app->main_monitor(), 400, 400, false, kWindowFlags_Titled);
 
     window->SetTitle("Online Chess");
 
