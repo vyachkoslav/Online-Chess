@@ -48,11 +48,11 @@ bool Board::makeMove(const Action &action, Side side) {
 			positions[x.first + x.second * 8] = nullptr;
 		}
 		movingSide = movingSide == Side::white ? Side::black : Side::white;
-
-		if (std::tolower(positions[y.first + y.second * 8]->name) == 'p' && abs(y.second - x.second) == 2) {
-			positions[y.first + y.second * 8]->passant = true;
+		if (positions[y.first + y.second * 8]) {
+			if (std::tolower(positions[y.first + y.second * 8]->name) == 'p' && abs(y.second - x.second) == 2) {
+				positions[y.first + y.second * 8]->passant = true;
+			}
 		}
-
 		return true;
 	}
 	return false;
