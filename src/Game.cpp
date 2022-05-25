@@ -4,9 +4,12 @@ Player::Player(Side side) {
 	this->side = side;
 }
 
-bool Player::makeMove(const std::pair<int, int> &x, const std::pair<int, int> &y, Board &board) {
-	return board.makeMove(x, y, side);
+bool Player::makeMove(const Action &action, Board &board) {
+	return board.makeMove(action, side);
 }
+
+Action::Action(std::pair<int, int> x, std::pair<int, int> y, char n) : 
+	pos(x), dest(y), name(n) {}
 
 Board::Board() {
 	for (int i = 0; i < 32; i++)
@@ -29,12 +32,21 @@ void Board::clearPassants() {
 	}
 }
 
-bool Board::makeMove(const std::pair<int, int>& x, const std::pair<int, int>& y, Side side) {
+bool Board::makeMove(const Action &action, Side side) {
+	auto x = action.pos;
+	auto y = action.dest;
 	if (side == movingSide) {
 		clearPassants();
-		positions[y.first + y.second * 8] = positions[x.first + x.second * 8];
-		positions[y.first + y.second * 8]->moveCount++;
-		positions[x.first + x.second * 8] = nullptr;
+		if (action.name == ' ') {
+			positions[x.first + x.second * 8] = nullptr;
+			positions[y.first + y.second * 8] = nullptr;
+		}
+		else {
+			positions[y.first + y.second * 8] = positions[x.first + x.second * 8];
+			positions[y.first + y.second * 8]->moveCount++;
+			positions[y.first + y.second * 8]->name = action.name;
+			positions[x.first + x.second * 8] = nullptr;
+		}
 		movingSide = movingSide == Side::white ? Side::black : Side::white;
 
 		if (std::tolower(positions[y.first + y.second * 8]->name) == 'p' && abs(y.second - x.second) == 2) {

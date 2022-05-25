@@ -3,6 +3,7 @@
 class Game;
 class Player;
 struct Figure;
+struct Action;
 class Board;
 
 enum class Side { white, black };
@@ -17,7 +18,7 @@ class Player {
 public:
 	Player(Side);
 	Side getSide() const { return side; }
-	bool makeMove(const std::pair<int,int> &, const std::pair<int, int>&, Board &);
+	bool makeMove(const Action&, Board &);
 
 private:
 	Side side;
@@ -29,7 +30,8 @@ struct Figure {
 	bool passant = false;
 };
 
-struct Move {
+struct Action {
+	Action(std::pair<int, int>, std::pair<int, int>, char);
 	std::pair<int, int> pos;
 	std::pair<int, int> dest;
 	char name;
@@ -39,7 +41,7 @@ class Board {
 public:
 	Board();
 	Side getMovingSide() const { return movingSide; }
-	bool makeMove(const std::pair<int, int>&, const std::pair<int, int>&, Side);
+	bool makeMove(const Action&, Side);
 	std::vector<Figure*>* getPositions() { return &positions; };
 
 private:

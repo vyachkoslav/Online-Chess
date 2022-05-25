@@ -78,20 +78,28 @@ public:
 
             auto moves = match_info::logic.getAvailableMovesForFigure(match_info::selectedPos);
             bool hasMove = false;
-            for (const auto &pos : moves) {
-                std::cout << pos.first << " " << pos.second << std::endl;
-                if (pos == newPos) {
-                    match_info::board.makeMove(match_info::selectedPos, pos, match_info::board.getMovingSide());
-                    UpdatePosition(match_info::selectedPos.first, match_info::selectedPos.second, ' ');
-                    UpdatePosition(pos.first, pos.second, selectedFigure->name);
-                    hasMove = true;
-                    break;
+            for (const auto &move : moves) {
+                for (const auto& action : move) {
+                    if (action.pos == match_info::selectedPos && action.dest == newPos) {
+                        for (const auto& action : move) {
+                            match_info::board.makeMove(action, match_info::board.getMovingSide());
+                            UpdatePosition(action.pos.first, action.pos.second, ' ');
+                            UpdatePosition(action.dest.first, action.dest.second, action.name);
+                            hasMove = true;
+                        }
+                        break;
+                    }
                 }
             }
+            
             if (!hasMove) {
                 match_info::selectedPos = newPos;
-                for (const auto &pos : match_info::logic.getAvailableMovesForFigure(match_info::selectedPos)) {
-                    UpdatePosition(pos.first, pos.second, 'm');
+                if (match_info::positions[newIndex]) {
+                    for (const auto& move : match_info::logic.getAvailableMovesForFigure(match_info::selectedPos)) {
+                        for (const auto& action : move) {
+                            UpdatePosition(action.dest.first, action.dest.second, 'm');
+                        }
+                    }
                 }
             }
         }

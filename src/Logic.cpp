@@ -1,12 +1,12 @@
 #include "Logic.h"
 #include <stdexcept>
 
-VectorOfPairs Logic::getAvailableMovesForFigure(Pos2D figPos)
+std::vector<Move> Logic::getAvailableMovesForFigure(Pos2D figPos)
 {
 	int index = figPos.first + figPos.second * 8;
 	const Figure* fig = (*board)[index];
 	if (!fig)
-		return VectorOfPairs();
+		return std::vector<Move>();
 	switch (std::tolower(fig->name)) {
 	case 'p':
 		return availableMovesForPawn(figPos);
@@ -48,19 +48,21 @@ int inline Logic::pairToInd(Pos2D pos) {
 int inline Logic::sgn(int val) {
 	return (0 < val) - (val < 0);
 }
+Action Logic::prepareAction(Pos2D pos, Pos2D dest) {
+	return Action(pos, dest, (*board)[pairToInd(pos)]->name);
+}
 
-VectorOfPairs Logic::movesBeforeFigureOrEnd(Pos2D figPos, bool (*filter)(Pos2D), void (*iter)(Pos2D*)) {
-	VectorOfPairs out;
+std::vector<Move> Logic::movesBeforeFigureOrEnd(Pos2D figPos, bool (*filter)(Pos2D), void (*iter)(Pos2D*)) {
+	std::vector<Move> out;
 	Figure* fig = (*board)[pairToInd(figPos)];
-	iter(&figPos);
-	for (Pos2D pos = figPos; filter(pos); iter(&pos)) {
+	Pos2D pos = figPos;
+	iter(&pos);
+	for (; filter(pos); iter(&pos)) {
 		Figure* other = (*board)[pairToInd(pos)];
-		if (isEmpty(other)) {
-			out.push_back(Pos2D(pos));
-		}
-		else if (isEnemy(fig, (*board)[pairToInd(pos)])) {
-			out.push_back(Pos2D(pos));
-			break;
+		if (isEmpty(other) || isEnemy(fig, (*board)[pairToInd(pos)])) {
+			out.push_back(Move{ prepareAction(figPos, Pos2D(pos)) });
+			if(!isEmpty(other))
+				break;
 		}
 		else {
 			break;
@@ -70,11 +72,11 @@ VectorOfPairs Logic::movesBeforeFigureOrEnd(Pos2D figPos, bool (*filter)(Pos2D),
 	return out;
 }
 
-VectorOfPairs Logic::availableMovesForPawn(Pos2D figPos) {
+std::vector<Move> Logic::availableMovesForPawn(Pos2D figPos) {
 	if (figPos.second == 7 || figPos.second == 0)
 		throw std::invalid_argument("Pawn shouldn't be at last row");
 	
-	VectorOfPairs out;
+	std::vector<Move> out;
 	
 	int index = pairToInd(figPos.first, figPos.second);
 	std::vector<Figure*>::const_iterator fig = board->begin() + index;
@@ -82,32 +84,42 @@ VectorOfPairs Logic::availableMovesForPawn(Pos2D figPos) {
 	int frontCell = std::isupper(name) ? 8 : -8;
 
 	if (isEmpty(fig[frontCell])) {
-		out.push_back(indToPair(index + frontCell));
+		out.push_back(Move{ prepareAction(figPos, indToPair(index + frontCell)) });
 		if (((std::isupper(name) && figPos.second == 1) ||								// is at start pos
 			(std::islower(name) && figPos.second == 6)) &&
 			isEmpty(fig[frontCell * 2])) {
-			out.push_back(indToPair(index + frontCell * 2));
+			out.push_back(Move{ prepareAction(figPos, indToPair(index + frontCell * 2)) });
 		}
 	}
 	bool onLeftEdge = frontCell > 0 ? figPos.first == 0 : figPos.first == 7;
 	bool onRightEdge = frontCell > 0 ? figPos.first == 7 : figPos.first == 0;;
 	if (!onLeftEdge && !isEmpty(fig[-1]) && isEnemy(*fig, fig[-1]) && fig[-1]->passant) { // passants
-		out.push_back(indToPair(index + frontCell - sgn(frontCell)));
+		Move actions;
+		actions.push_back(prepareAction(figPos, indToPair(index + frontCell - sgn(frontCell))));
+		Pos2D enemyPos = Pos2D(figPos.first - 1, figPos.second);
+		actions.push_back(Action(enemyPos, enemyPos, ' '));
+
+		out.push_back(actions);
 	}
 	if (!onRightEdge && !isEmpty(fig[1]) && isEnemy(*fig, fig[1]) && fig[1]->passant) {
-		out.push_back(indToPair(index + frontCell + sgn(frontCell)));
+		Move actions;
+		actions.push_back(prepareAction(figPos, indToPair(index + frontCell + sgn(frontCell))));
+		Pos2D enemyPos = Pos2D(figPos.first + 1, figPos.second);
+		actions.push_back(Action(enemyPos, enemyPos, ' '));
+
+		out.push_back(actions);
 	}
 	if (!onLeftEdge && isEnemy(*fig, fig[frontCell - sgn(frontCell)])) { // not on edge and diag left is enemy
-		out.push_back(indToPair(index + frontCell - sgn(frontCell)));
+		out.push_back(Move{ prepareAction(figPos, indToPair(index + frontCell - sgn(frontCell))) });
 	}
 	if (!onRightEdge && isEnemy(*fig, fig[frontCell + sgn(frontCell)])) { // not on edge and diag right is enemy
-		out.push_back(indToPair(index + frontCell + sgn(frontCell)));
+		out.push_back(Move{ prepareAction(figPos, indToPair(index + frontCell + sgn(frontCell))) });
 	}
 	return out;
 }
 
-VectorOfPairs Logic::availableMovesForRook(Pos2D figPos) {
-	VectorOfPairs out;
+std::vector<Move> Logic::availableMovesForRook(Pos2D figPos) {
+	std::vector<Move> out;
 
 	auto right = movesBeforeFigureOrEnd(figPos, [](auto pos) { return pos.first < 8; }, [](Pos2D* pos) { ++pos->first; });
 	auto left = movesBeforeFigureOrEnd(figPos, [](auto pos) { return pos.first >= 0; }, [](Pos2D* pos) { --pos->first; });
@@ -122,8 +134,8 @@ VectorOfPairs Logic::availableMovesForRook(Pos2D figPos) {
 	return out;
 }
 
-VectorOfPairs Logic::availableMovesForBishop(Pos2D figPos) {
-	VectorOfPairs out;
+std::vector<Move> Logic::availableMovesForBishop(Pos2D figPos) {
+	std::vector<Move> out;
 
 	auto rightDown = movesBeforeFigureOrEnd(figPos, 
 		[](auto pos) { return pos.first < 8 && pos.second < 8; }, 
@@ -146,11 +158,11 @@ VectorOfPairs Logic::availableMovesForBishop(Pos2D figPos) {
 	return out;
 }
 
-VectorOfPairs Logic::availableMovesForQueen(Pos2D figPos) {
-	VectorOfPairs out;
+std::vector<Move> Logic::availableMovesForQueen(Pos2D figPos) {
+	std::vector<Move> out;
 
-	VectorOfPairs rookMoves = availableMovesForRook(figPos);
-	VectorOfPairs bishopMoves = availableMovesForBishop(figPos);
+	auto rookMoves = availableMovesForRook(figPos);
+	auto bishopMoves = availableMovesForBishop(figPos);
 
 	out.insert(out.end(), rookMoves.begin(), rookMoves.end());
 	out.insert(out.end(), bishopMoves.begin(), bishopMoves.end());
@@ -158,8 +170,8 @@ VectorOfPairs Logic::availableMovesForQueen(Pos2D figPos) {
 	return out;
 }
 
-VectorOfPairs Logic::availableMovesForKnight(Pos2D figPos) {
-	VectorOfPairs out;
+std::vector<Move> Logic::availableMovesForKnight(Pos2D figPos) {
+	std::vector<Move> out;
 	Figure* fig = (*board)[pairToInd(figPos)];
 
 	int options[4] = { -2, -1, 1, 2 };
@@ -172,7 +184,7 @@ VectorOfPairs Logic::availableMovesForKnight(Pos2D figPos) {
 					newY < 8 && newY >= 0){
 					Figure* newFig = (*board)[pairToInd(newX, newY)];
 					if (isEmpty(newFig) || isEnemy(fig, newFig))
-						out.push_back(Pos2D(newX, newY));
+						out.push_back(Move{ prepareAction(figPos, Pos2D(newX, newY)) });
 				}
 			}
 		}
@@ -181,8 +193,8 @@ VectorOfPairs Logic::availableMovesForKnight(Pos2D figPos) {
 	return out;  
 }
 
-VectorOfPairs Logic::availableMovesForKing(Pos2D figPos) {
-	VectorOfPairs out;
+std::vector<Move> Logic::availableMovesForKing(Pos2D figPos) {
+	std::vector<Move> out;
 	Figure* fig = (*board)[pairToInd(figPos)];
 	int options[3] = { -1, 0, 1};
 	for (int x : options) {
@@ -194,14 +206,14 @@ VectorOfPairs Logic::availableMovesForKing(Pos2D figPos) {
 					newY < 8 && newY >= 0) {
 					Figure* newFig = (*board)[pairToInd(newX, newY)];
 					if (isEmpty(newFig) || isEnemy(fig, newFig))
-						out.push_back(Pos2D(newX, newY));
+						out.push_back(Move{ prepareAction(figPos, Pos2D(newX, newY)) });
 				}
 			}
 		}
 	}
 	if (fig->moveCount == 0) {
-		Figure* leftRook = (*board)[pairToInd(figPos.first - 4, figPos.second)];
-		Figure* rightRook = (*board)[pairToInd(figPos.first + 3, figPos.second)];
+		Figure* leftRook = (*board)[pairToInd(0, figPos.second)];
+		Figure* rightRook = (*board)[pairToInd(7, figPos.second)];
 		if (!isEmpty(leftRook) && leftRook->moveCount == 0) {
 			bool isFree = true;
 			for (int i = 1; i < 4; ++i) {
@@ -210,8 +222,14 @@ VectorOfPairs Logic::availableMovesForKing(Pos2D figPos) {
 					break;
 				}
 			}
-			if (isFree)
-				out.push_back(Pos2D(2, figPos.second));
+			if (isFree) {
+				Move actions;
+				actions.push_back(prepareAction(figPos, Pos2D(2, figPos.second)));
+				Pos2D rookPos = Pos2D(0, figPos.second);
+				actions.push_back(prepareAction(rookPos, Pos2D(3, figPos.second)));
+
+				out.push_back(actions);
+			}
 		}
 		if (!isEmpty(rightRook) && rightRook->moveCount == 0) {
 			bool isFree = true;
@@ -221,8 +239,14 @@ VectorOfPairs Logic::availableMovesForKing(Pos2D figPos) {
 					break;
 				}
 			}
-			if (isFree)
-				out.push_back(Pos2D(6, figPos.second));
+			if (isFree) {
+				Move actions;
+				actions.push_back(prepareAction(figPos, Pos2D(6, figPos.second)));
+				Pos2D rookPos = Pos2D(7, figPos.second);
+				actions.push_back(prepareAction(rookPos, Pos2D(5, figPos.second)));
+
+				out.push_back(actions);
+			}
 		}
 	}
 	return out;
