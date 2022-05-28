@@ -18,6 +18,7 @@ namespace match_info {
     std::pair<int, int> selectedPos;
     Player thisPlayer = Player(Side::white);
     Player enemyPlayer = Player(Side::black);
+    std::vector<Move> promotingMoves;
 }
 
 std::string JSStringToString(JSContextRef ctx, JSValueRef str) {
@@ -74,33 +75,60 @@ public:
         Figure* selectedFigure = match_info::positions[selectedIndex];
         Figure* newFig = match_info::positions[newIndex];
 
-        if (selectedFigure != newFig) {
+        RefreshBoard();
+        if (match_info::promotingMoves.size() > 0) {
             RefreshBoard();
+            Action action = match_info::promotingMoves[newPos.first][0];
+            if (match_info::board.makeMove(action, match_info::board.getMovingSide())) {
+                UpdatePosition(action.pos.first, action.pos.second, ' ');
+                UpdatePosition(action.dest.first, action.dest.second, action.name);
+                match_info::selectedPos = action.dest;
+                newPos = action.dest;
+            }
+            match_info::promotingMoves.clear();
+        }
 
+        bool hasMove = false;
+        if (selectedFigure != newFig) {
             auto moves = match_info::logic.getAvailableMovesForFigure(match_info::selectedPos);
-            bool hasMove = false;
+            std::vector<Move> possibleMoves;
             for (const auto &move : moves) {
                 for (const auto& action : move) {
                     if (action.pos == match_info::selectedPos && action.dest == newPos) {
-                        for (const auto& action : move) {
-                            if (match_info::board.makeMove(action, match_info::board.getMovingSide())) {
-                                UpdatePosition(action.pos.first, action.pos.second, ' ');
-                                UpdatePosition(action.dest.first, action.dest.second, action.name);
-                                hasMove = true;
-                            }
-                        }
+                        possibleMoves.push_back(move);
                         break;
                     }
                 }
             }
-            
-            if (!hasMove) {
-                match_info::selectedPos = newPos;
-                if (match_info::positions[newIndex]) {
-                    for (const auto& move : match_info::logic.getAvailableMovesForFigure(match_info::selectedPos)) {
-                        for (const auto& action : move) {
-                            UpdatePosition(action.dest.first, action.dest.second, 'm');
-                        }
+            if (possibleMoves.size() == 1) {
+                for (const auto& action : possibleMoves[0]) {
+                    if (match_info::board.makeMove(action, match_info::board.getMovingSide())) {
+                        UpdatePosition(action.pos.first, action.pos.second, ' ');
+                        UpdatePosition(action.dest.first, action.dest.second, action.name);
+                        hasMove = true;
+                    }
+                }
+            }
+            else if(possibleMoves.size() > 1) {
+                for (int i = 0; i < 64; ++i) {
+                    UpdatePosition(i % 8, i / 8, ' ');
+                }
+                for (int i = 0; i < possibleMoves.size(); ++i) {
+                    Action action = possibleMoves[i][0];
+                    UpdatePosition(i, 0, action.name);
+                    SetMove(i, 0);
+                }
+                hasMove = true;
+                match_info::promotingMoves = possibleMoves;
+            }
+        }
+
+        if (!hasMove) {
+            match_info::selectedPos = newPos;
+            if (match_info::positions[newIndex]) {
+                for (const auto& move : match_info::logic.getAvailableMovesForFigure(match_info::selectedPos)) {
+                    for (const auto& action : move) {
+                        SetMove(action.dest.first, action.dest.second);
                     }
                 }
             }
@@ -116,12 +144,14 @@ public:
 
         Ref<JSContext> context = caller->LockJSContext();
         JSContextRef ctx = context.get();
-        JSStringRef name = JSStringCreateWithUTF8CString("OnTileClick");
-        JSObjectRef func = JSObjectMakeFunctionWithCallback(ctx, name,
-            &OnTileClick);
-        JSObjectRef globalObj = JSContextGetGlobalObject(ctx);
-        JSObjectSetProperty(ctx, globalObj, name, func, 0, 0);
-        JSStringRelease(name);
+        {
+            JSStringRef name = JSStringCreateWithUTF8CString("OnTileClick");
+            JSObjectRef func = JSObjectMakeFunctionWithCallback(ctx, name,
+                &OnTileClick);
+            JSObjectRef globalObj = JSContextGetGlobalObject(ctx);
+            JSObjectSetProperty(ctx, globalObj, name, func, 0, 0);
+            JSStringRelease(name);
+        }
 
         match_info::overlay_->view()->EvaluateScript("init();");
         for (int i = 0; i < 64; ++i) {
@@ -142,6 +172,12 @@ public:
     static void UpdatePosition(int x, int y, char name) {
         std::ostringstream oss;
         oss << "SetPosition('" << x << "', '" << y << "', '" << name << "');";
+        const ultralight::String command = oss.str().c_str();
+        match_info::overlay_->view()->EvaluateScript(command);
+    }
+    static void SetMove(int x, int y) {
+        std::ostringstream oss;
+        oss << "SetMove('" << x << "', '" << y << "');";
         const ultralight::String command = oss.str().c_str();
         match_info::overlay_->view()->EvaluateScript(command);
     }

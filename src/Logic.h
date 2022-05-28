@@ -26,6 +26,7 @@ private:
 	Action prepareAction(Pos2D, Pos2D);
 	
 	std::vector<Move> movesBeforeFigureOrEnd(Pos2D, bool (*)(Pos2D), void (*)(Pos2D*));
+	std::vector<Move> moveAndTryPromote(Pos2D, Pos2D);
 	std::vector<Move> availableMovesForPawn(Pos2D);
 	std::vector<Move> availableMovesForRook(Pos2D);
 	std::vector<Move> availableMovesForKnight(Pos2D);

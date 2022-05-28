@@ -72,6 +72,22 @@ std::vector<Move> Logic::movesBeforeFigureOrEnd(Pos2D figPos, bool (*filter)(Pos
 	return out;
 }
 
+std::vector<Move> Logic::moveAndTryPromote(Pos2D figPos, Pos2D toPos) {
+	std::vector<Move> out;
+
+	if (!(toPos.second == 7 || toPos.second == 0)) {
+		out.push_back(Move{ prepareAction(figPos, toPos) });
+	}
+	else { // promotion
+		auto editFunc = toPos.second == 7 ? toupper : tolower;
+		out.push_back(Move{ Action(figPos, toPos, editFunc('Q')) });
+		out.push_back(Move{ Action(figPos, toPos, editFunc('N')) });
+		out.push_back(Move{ Action(figPos, toPos, editFunc('B')) });
+		out.push_back(Move{ Action(figPos, toPos, editFunc('R')) });
+	}
+
+	return out;
+}
 std::vector<Move> Logic::availableMovesForPawn(Pos2D figPos) {
 	if (figPos.second == 7 || figPos.second == 0)
 		throw std::invalid_argument("Pawn shouldn't be at last row");
@@ -84,7 +100,9 @@ std::vector<Move> Logic::availableMovesForPawn(Pos2D figPos) {
 	int frontCell = std::isupper(name) ? 8 : -8;
 
 	if (isEmpty(fig[frontCell])) {
-		out.push_back(Move{ prepareAction(figPos, indToPair(index + frontCell)) });
+		Pos2D nextPos = indToPair(index + frontCell);
+		auto moves = moveAndTryPromote(figPos, nextPos);
+		out.insert(out.end(), moves.begin(), moves.end());
 		if (((std::isupper(name) && figPos.second == 1) ||								// is at start pos
 			(std::islower(name) && figPos.second == 6)) &&
 			isEmpty(fig[frontCell * 2])) {
@@ -93,7 +111,7 @@ std::vector<Move> Logic::availableMovesForPawn(Pos2D figPos) {
 	}
 	bool onLeftEdge = frontCell > 0 ? figPos.first == 0 : figPos.first == 7;
 	bool onRightEdge = frontCell > 0 ? figPos.first == 7 : figPos.first == 0;;
-	if (!onLeftEdge && !isEmpty(fig[-1]) && isEnemy(*fig, fig[-1]) && fig[-1]->passant) { // passants
+	if (!onLeftEdge && !isEmpty(fig[-1]) && isEnemy(*fig, fig[-1]) && fig[-1]->passant) { // passant
 		Move actions;
 		actions.push_back(prepareAction(figPos, indToPair(index + frontCell - sgn(frontCell))));
 		Pos2D enemyPos = Pos2D(figPos.first - 1, figPos.second);
@@ -101,7 +119,7 @@ std::vector<Move> Logic::availableMovesForPawn(Pos2D figPos) {
 
 		out.push_back(actions);
 	}
-	if (!onRightEdge && !isEmpty(fig[1]) && isEnemy(*fig, fig[1]) && fig[1]->passant) {
+	if (!onRightEdge && !isEmpty(fig[1]) && isEnemy(*fig, fig[1]) && fig[1]->passant) { // passant
 		Move actions;
 		actions.push_back(prepareAction(figPos, indToPair(index + frontCell + sgn(frontCell))));
 		Pos2D enemyPos = Pos2D(figPos.first + 1, figPos.second);
@@ -110,10 +128,12 @@ std::vector<Move> Logic::availableMovesForPawn(Pos2D figPos) {
 		out.push_back(actions);
 	}
 	if (!onLeftEdge && isEnemy(*fig, fig[frontCell - sgn(frontCell)])) { // not on edge and diag left is enemy
-		out.push_back(Move{ prepareAction(figPos, indToPair(index + frontCell - sgn(frontCell))) });
+		auto moves = moveAndTryPromote(figPos, indToPair(index + frontCell - sgn(frontCell)));
+		out.insert(out.end(), moves.begin(), moves.end());
 	}
 	if (!onRightEdge && isEnemy(*fig, fig[frontCell + sgn(frontCell)])) { // not on edge and diag right is enemy
-		out.push_back(Move{ prepareAction(figPos, indToPair(index + frontCell + sgn(frontCell))) });
+		auto moves = moveAndTryPromote(figPos, indToPair(index + frontCell + sgn(frontCell)));
+		out.insert(out.end(), moves.begin(), moves.end());
 	}
 	return out;
 }
