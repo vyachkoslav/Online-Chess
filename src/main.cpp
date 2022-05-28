@@ -74,6 +74,7 @@ public:
         int newIndex = newPos.first + newPos.second * 8;
         Figure* selectedFigure = match_info::positions[selectedIndex];
         Figure* newFig = match_info::positions[newIndex];
+        
 
         RefreshBoard();
         if (match_info::promotingMoves.size() > 0) {
@@ -89,7 +90,7 @@ public:
         }
 
         bool hasMove = false;
-        if (selectedFigure != newFig) {
+        if (selectedFigure != newFig && selectedFigure && isOnMovingSide(selectedFigure->name)) {
             auto moves = match_info::logic.getAvailableMovesForFigure(match_info::selectedPos);
             std::vector<Move> possibleMoves;
             for (const auto &move : moves) {
@@ -122,10 +123,10 @@ public:
                 match_info::promotingMoves = possibleMoves;
             }
         }
-
+        
         if (!hasMove) {
             match_info::selectedPos = newPos;
-            if (match_info::positions[newIndex]) {
+            if (newFig && isOnMovingSide(newFig->name)) {
                 for (const auto& move : match_info::logic.getAvailableMovesForFigure(match_info::selectedPos)) {
                     for (const auto& action : move) {
                         SetMove(action.dest.first, action.dest.second);
@@ -168,6 +169,10 @@ public:
             }
             UpdatePosition(i % 8, i / 8, name);
         }
+    }
+    static bool isOnMovingSide(char name) {
+        Side figSide = isupper(name) ? Side::white : Side::black;
+        return figSide == match_info::board.getMovingSide();
     }
     static void UpdatePosition(int x, int y, char name) {
         std::ostringstream oss;
