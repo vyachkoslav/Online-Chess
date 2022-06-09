@@ -16,12 +16,12 @@ class Game{
 
 class Player {
 public:
-	Player(Side);
+	Player(Side s) : side(s) {}
 	Side getSide() const { return side; }
 	bool makeMove(const Action&, Board &);
 
 private:
-	Side side;
+	const Side side;
 };
 
 struct Figure {
@@ -42,7 +42,7 @@ public:
 	Board();
 	Side getMovingSide() const { return movingSide; }
 	bool makeMove(const Action&, Side);
-	std::vector<Figure*>* getPositions() { return &positions; };
+	const std::vector<Figure*>* getPositions() const { return &positions; };
 
 private:
 	void clearPassants();

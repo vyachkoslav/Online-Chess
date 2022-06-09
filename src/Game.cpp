@@ -1,9 +1,5 @@
 #include "Game.h"
 
-Player::Player(Side side) {
-	this->side = side;
-}
-
 bool Player::makeMove(const Action &action, Board &board) {
 	return board.makeMove(action, side);
 }
@@ -27,7 +23,7 @@ Board::Board() {
 }
 
 void Board::clearPassants() {
-	for (Figure fig : figures) {
+	for (Figure& fig : figures) {
 		fig.passant = false;
 	}
 }
