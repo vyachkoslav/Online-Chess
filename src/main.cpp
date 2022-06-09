@@ -70,8 +70,8 @@ public:
         std::pair<int, int> newPos;
         newPos.first = cpp_string[0] - '0';
         newPos.second = cpp_string[1] - '0';
-        int selectedIndex = match_info::selectedPos.first + match_info::selectedPos.second * 8;
-        int newIndex = newPos.first + newPos.second * 8;
+        int selectedIndex = match_info::logic.pairToInd(match_info::selectedPos);
+        int newIndex = match_info::logic.pairToInd(newPos);
         Figure* selectedFigure = match_info::positions[selectedIndex];
         Figure* newFig = match_info::positions[newIndex];
         
@@ -112,7 +112,8 @@ public:
             }
             else if(possibleMoves.size() > 1) {
                 for (int i = 0; i < 64; ++i) {
-                    UpdatePosition(i % 8, i / 8, ' ');
+                    auto pos = match_info::logic.indToPair(i);
+                    UpdatePosition(pos.first, pos.second, ' ');
                 }
                 for (int i = 0; i < possibleMoves.size(); ++i) {
                     Action action = possibleMoves[i][0];

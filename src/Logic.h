@@ -9,19 +9,22 @@ using Move = std::vector<Action>;
 
 class Logic {
 public:
-	Logic(const std::vector<Figure*> *board) { this->board = board; }
+	Logic(const std::vector<Figure*> *b) : board(b) {}
 
 	std::vector<Move> getAvailableMovesForFigure(Pos2D);
+
+	static Pos2D inline indToPair(int);
+	static int inline pairToInd(int, int);
+	static int inline pairToInd(Pos2D);
 
 private:
 	const std::vector<Figure*>* board;
 
 	static bool inline isEmpty(Figure* const &);
 	static bool inline isEnemy(Figure* const &, Figure* const &);
-	static Pos2D inline indToPair(int);
+	
 	static int inline sgn(int);
-	static int inline pairToInd(int, int);
-	static int inline pairToInd(Pos2D);
+	
 
 	Action prepareAction(Pos2D, Pos2D);
 	
