@@ -113,7 +113,7 @@ std::vector<Move> Logic::availableMovesForPawn(Pos2D figPos) {
 	bool onRightEdge = frontCell > 0 ? figPos.first == 7 : figPos.first == 0;;
 	if (!onLeftEdge && !isEmpty(fig[-1]) && isEnemy(*fig, fig[-1]) && fig[-1]->passant) { // passant
 		Move actions;
-		actions.push_back(prepareAction(figPos, indToPair(index + frontCell - sgn(frontCell))));
+		actions.push_back(prepareAction(figPos, indToPair(index + frontCell - 1)));
 		Pos2D enemyPos = Pos2D(figPos.first - 1, figPos.second);
 		actions.push_back(Action(enemyPos, enemyPos, ' '));
 
@@ -121,7 +121,7 @@ std::vector<Move> Logic::availableMovesForPawn(Pos2D figPos) {
 	}
 	if (!onRightEdge && !isEmpty(fig[1]) && isEnemy(*fig, fig[1]) && fig[1]->passant) { // passant
 		Move actions;
-		actions.push_back(prepareAction(figPos, indToPair(index + frontCell + sgn(frontCell))));
+		actions.push_back(prepareAction(figPos, indToPair(index + frontCell + 1)));
 		Pos2D enemyPos = Pos2D(figPos.first + 1, figPos.second);
 		actions.push_back(Action(enemyPos, enemyPos, ' '));
 

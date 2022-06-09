@@ -67,7 +67,8 @@ public:
         std::cout << cpp_string << std::endl;
         if(cpp_string.length() > 2)
             return JSValueMakeNull(ctx);
-        std::pair<int, int> newPos;
+
+        Pos2D newPos;
         newPos.first = cpp_string[0] - '0';
         newPos.second = cpp_string[1] - '0';
         int selectedIndex = match_info::logic.pairToInd(match_info::selectedPos);
@@ -78,16 +79,7 @@ public:
 
         RefreshBoard();
         if (match_info::promotingMoves.size() > 0) {
-            if (newPos.first < match_info::promotingMoves.size()) {
-                Action action = match_info::promotingMoves[newPos.first][0];
-                if (match_info::board.makeMove(std::vector<Action>{action}, match_info::board.getMovingSide())) {
-                    UpdatePosition(action.pos.first, action.pos.second, ' ');
-                    UpdatePosition(action.dest.first, action.dest.second, action.name);
-                    match_info::selectedPos = action.dest;
-                    newPos = action.dest;
-                }
-            }
-            match_info::promotingMoves.clear();
+            MakePromotingMove(newPos);
         }
 
         bool hasMove = false;
@@ -112,17 +104,7 @@ public:
                 }
             }
             else if(possibleMoves.size() > 1) {
-                for (int i = 0; i < 64; ++i) {
-                    auto pos = match_info::logic.indToPair(i);
-                    UpdatePosition(pos.first, pos.second, ' ');
-                }
-                for (int i = 0; i < possibleMoves.size(); ++i) {
-                    Action action = possibleMoves[i][0];
-                    UpdatePosition(i, 0, action.name);
-                    SetMove(i, 0);
-                }
-                hasMove = true;
-                match_info::promotingMoves = possibleMoves;
+                ShowPromotingMoves(possibleMoves);
             }
         }
         
@@ -130,9 +112,8 @@ public:
             match_info::selectedPos = newPos;
             if (newFig && isOnMovingSide(newFig->name)) {
                 for (const auto& move : match_info::logic.getAvailableMovesForFigure(match_info::selectedPos)) {
-                    for (const auto& action : move) {
-                        SetMove(action.dest.first, action.dest.second);
-                    }
+                    const auto& action = move[0];
+                    SetMove(action.dest.first, action.dest.second);
                 }
             }
         }
@@ -163,6 +144,32 @@ public:
                 UpdatePosition(pos.first, pos.second, match_info::positions[i]->name);
             }
         }
+    }
+private:
+    static void ShowPromotingMoves(const std::vector<Move>& possibleMoves) {
+        for (int i = 0; i < 64; ++i) {
+            auto pos = match_info::logic.indToPair(i);
+            UpdatePosition(pos.first, pos.second, ' ');
+        }
+        for (int i = 0; i < possibleMoves.size(); ++i) {
+            Action action = possibleMoves[i][0];
+            UpdatePosition(i, 0, action.name);
+            SetMove(i, 0);
+        }
+        
+        match_info::promotingMoves = possibleMoves;
+    }
+    static void MakePromotingMove(Pos2D& newPos) {
+        if (newPos.first < match_info::promotingMoves.size() && newPos.second == 0) {
+            Action action = match_info::promotingMoves[newPos.first][0];
+            if (match_info::board.makeMove(std::vector<Action>{action}, match_info::board.getMovingSide())) {
+                UpdatePosition(action.pos.first, action.pos.second, ' ');
+                UpdatePosition(action.dest.first, action.dest.second, action.name);
+                match_info::selectedPos = action.dest;
+                newPos = action.dest;
+            }
+        }
+        match_info::promotingMoves.clear();
     }
     static void RefreshBoard() {
         for (int i = 0; i < 64; ++i) {
