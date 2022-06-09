@@ -18,7 +18,7 @@ class Player {
 public:
 	Player(Side s) : side(s) {}
 	Side getSide() const { return side; }
-	bool makeMove(const Action&, Board &);
+	bool makeMove(const std::vector<Action>&, Board &);
 
 private:
 	const Side side;
@@ -41,7 +41,7 @@ class Board {
 public:
 	Board();
 	Side getMovingSide() const { return movingSide; }
-	bool makeMove(const Action&, Side);
+	bool makeMove(const std::vector<Action>&, Side);
 	const std::vector<Figure*>* getPositions() const { return &positions; };
 
 private:

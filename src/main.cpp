@@ -78,13 +78,14 @@ public:
 
         RefreshBoard();
         if (match_info::promotingMoves.size() > 0) {
-            RefreshBoard();
-            Action action = match_info::promotingMoves[newPos.first][0];
-            if (match_info::board.makeMove(action, match_info::board.getMovingSide())) {
-                UpdatePosition(action.pos.first, action.pos.second, ' ');
-                UpdatePosition(action.dest.first, action.dest.second, action.name);
-                match_info::selectedPos = action.dest;
-                newPos = action.dest;
+            if (newPos.first < match_info::promotingMoves.size()) {
+                Action action = match_info::promotingMoves[newPos.first][0];
+                if (match_info::board.makeMove(std::vector<Action>{action}, match_info::board.getMovingSide())) {
+                    UpdatePosition(action.pos.first, action.pos.second, ' ');
+                    UpdatePosition(action.dest.first, action.dest.second, action.name);
+                    match_info::selectedPos = action.dest;
+                    newPos = action.dest;
+                }
             }
             match_info::promotingMoves.clear();
         }
@@ -102,8 +103,8 @@ public:
                 }
             }
             if (possibleMoves.size() == 1) {
-                for (const auto& action : possibleMoves[0]) {
-                    if (match_info::board.makeMove(action, match_info::board.getMovingSide())) {
+                if (match_info::board.makeMove(possibleMoves[0], match_info::board.getMovingSide())) {
+                    for (const auto& action : possibleMoves[0]) {
                         UpdatePosition(action.pos.first, action.pos.second, ' ');
                         UpdatePosition(action.dest.first, action.dest.second, action.name);
                         hasMove = true;
@@ -158,7 +159,8 @@ public:
         match_info::overlay_->view()->EvaluateScript("init();");
         for (int i = 0; i < 64; ++i) {
             if (match_info::positions[i]) {
-                UpdatePosition(i % 8, i / 8, match_info::positions[i]->name);
+                auto pos = match_info::logic.indToPair(i);
+                UpdatePosition(pos.first, pos.second, match_info::positions[i]->name);
             }
         }
     }
@@ -168,7 +170,8 @@ public:
             if (match_info::positions[i]) {
                 name = match_info::positions[i]->name;
             }
-            UpdatePosition(i % 8, i / 8, name);
+            auto pos = match_info::logic.indToPair(i);
+            UpdatePosition(pos.first, pos.second, name);
         }
     }
     static bool isOnMovingSide(char name) {

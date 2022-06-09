@@ -1,6 +1,6 @@
 #include "Game.h"
 
-bool Player::makeMove(const Action &action, Board &board) {
+bool Player::makeMove(const std::vector<Action>&action, Board &board) {
 	return board.makeMove(action, side);
 }
 
@@ -28,27 +28,31 @@ void Board::clearPassants() {
 	}
 }
 
-bool Board::makeMove(const Action &action, Side side) {
-	auto x = action.pos;
-	auto y = action.dest;
+bool Board::makeMove(const std::vector<Action>& action, Side side) {
+	
 	if (side == movingSide) {
 		clearPassants();
-		if (action.name == ' ') {
-			positions[x.first + x.second * 8] = nullptr;
-			positions[y.first + y.second * 8] = nullptr;
-		}
-		else {
-			positions[y.first + y.second * 8] = positions[x.first + x.second * 8];
-			positions[y.first + y.second * 8]->moveCount++;
-			positions[y.first + y.second * 8]->name = action.name;
-			positions[x.first + x.second * 8] = nullptr;
-		}
-		movingSide = movingSide == Side::white ? Side::black : Side::white;
-		if (positions[y.first + y.second * 8]) {
-			if (std::tolower(positions[y.first + y.second * 8]->name) == 'p' && abs(y.second - x.second) == 2) {
-				positions[y.first + y.second * 8]->passant = true;
+		for (Action act : action) {
+			auto& pos = positions[act.pos.first + act.pos.second * 8];
+			auto& dest = positions[act.dest.first + act.dest.second * 8];
+			if (act.name == ' ') {
+				pos = nullptr;
+				dest = nullptr;
+			}
+			else {
+				dest = pos;
+				dest->moveCount++;
+				dest->name = act.name;
+				pos = nullptr;
+			}
+			if (dest) {
+				if (std::tolower(dest->name) == 'p' && abs(act.dest.second - act.pos.second) == 2) {
+					dest->passant = true;
+				}
 			}
 		}
+		movingSide = movingSide == Side::white ? Side::black : Side::white;
+		
 		return true;
 	}
 	return false;
