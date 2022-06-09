@@ -78,7 +78,7 @@ public:
         
 
         RefreshBoard();
-        if (match_info::promotingMoves.size() > 0) {
+        if (IsPromoting()) {
             MakePromotingMove(newPos);
         }
 
@@ -146,6 +146,9 @@ public:
         }
     }
 private:
+    static bool IsPromoting() {
+        return match_info::promotingMoves.size() > 0;
+    }
     static void ShowPromotingMoves(const std::vector<Move>& possibleMoves) {
         for (int i = 0; i < 64; ++i) {
             auto pos = match_info::logic.indToPair(i);
