@@ -17,7 +17,6 @@ namespace Chess {
 
 	private:
 		const std::vector<Figure*>* positions;
-		Figure* passantFig = nullptr;
 
 		static bool inline isEmpty(Figure* const&);
 		static bool inline isEnemy(Figure* const&, Figure* const&);
@@ -27,6 +26,8 @@ namespace Chess {
 		static size_t inline pairToInd(Pos2D);
 
 		static int inline sgn(int);
+
+		Figure* getPassantFig() const;
 
 		Action prepareAction(Pos2D, Pos2D) const;
 		Action prepareAction(Pos2D, Pos2D, char) const;

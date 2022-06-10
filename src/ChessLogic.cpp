@@ -58,6 +58,25 @@ namespace Chess {
 	int inline ChessLogic::sgn(int val) {
 		return (0 < val) - (val < 0);
 	}
+
+	Figure* ChessLogic::getPassantFig() const{
+		if (!board.canUndo())
+			return nullptr;
+
+		Move move = *(board.getCurrentMove() - 1);
+		auto& action = move[0];
+		auto& dest = (*positions)[action.figureAtDest.posOnBoard];
+		if (dest) {
+			long long startY = indToPair(action.figureAtStart.posOnBoard).second;
+			long long endY = indToPair(action.figureAtDest.posOnBoard).second;
+
+			if (std::tolower(dest->name) == 'p' && abs(endY - startY) == 2) {
+				return dest;
+			}
+		}
+		return nullptr;
+	}
+
 	Action ChessLogic::prepareAction(Pos2D pos, Pos2D dest) const {
 		Figure def = Figure();
 
@@ -136,8 +155,11 @@ namespace Chess {
 				out.push_back(Move{ prepareAction(figPos, indToPair(index + frontCell * 2)) });
 			}
 		}
+
 		bool onLeftEdge = frontCell > 0 ? figPos.first == 0 : figPos.first == 7;
-		bool onRightEdge = frontCell > 0 ? figPos.first == 7 : figPos.first == 0;;
+		bool onRightEdge = frontCell > 0 ? figPos.first == 7 : figPos.first == 0;
+
+		Figure* passantFig = getPassantFig();
 		if (!onLeftEdge && !isEmpty(fig[-1]) && isEnemy(*fig, fig[-1]) && fig[-1] == passantFig) { // passant
 			Move actions;
 			actions.push_back(prepareAction(figPos, indToPair(index + frontCell - 1)));
@@ -154,6 +176,7 @@ namespace Chess {
 
 			out.push_back(actions);
 		}
+
 		if (!onLeftEdge && isEnemy(*fig, fig[frontCell - sgn(frontCell)])) { // not on edge and diag left is enemy
 			auto moves = moveAndTryPromote(figPos, indToPair(index + frontCell - sgn(frontCell)));
 			std::copy(moves.begin(), moves.end(), std::back_inserter(out));

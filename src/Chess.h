@@ -52,14 +52,18 @@ namespace Chess {
 		bool makeMove(const Move&, Side side);
 		bool undoMove();
 		bool redoMove();
-		bool canUndo() { return currentMove != moves.begin(); };
-		bool canRedo() { return currentMove != moves.end(); };
+		bool canUndo() const { return currentMove != moves.begin(); };
+		bool canRedo() const { return currentMove != moves.end(); };
 
 		size_t getWidth() const { return width; };
 		size_t getHeight() const { return height; };
 		Side getMovingSide() const { return movingSide; };
 
+		const std::vector<Move>& getMoves() const { return moves; };
+		std::vector<Move>::iterator getCurrentMove() const { return currentMove; };
+
 	private:
+		
 		Side movingSide{ Side::White };
 		size_t width, height;
 		std::vector<Figure*> positions;
@@ -74,6 +78,7 @@ namespace Chess {
 
 		virtual std::vector<Move> availableMovesForFigure(const Figure&) const = 0;
 		virtual GameState CheckBoardState() const = 0;
+
 	protected:
 		GameLogic(size_t _width, const std::vector<Figure*>& startPos) : board(Board(_width, startPos)){}
 		Board board;
