@@ -1,8 +1,11 @@
 #pragma once
 
-class Chess::UltralightInputManager;
-class Chess::UltralightUserInterface;
-class Chess::UltralightIOFactory;
+namespace Chess {
+	class UltralightInputManager;
+	class UltralightUserInterface;
+	class UltralightIOFactory;
+}
+
 
 #include "pch.h"
 #include "Chess.h"

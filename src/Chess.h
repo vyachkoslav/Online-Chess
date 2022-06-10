@@ -1,19 +1,35 @@
 #pragma once
 
-class Chess::GameLogic;
-class Chess::Figure;
-class Chess::Action;
-class Chess::Board;
-class Chess::Connection;
-class Chess::InputManager;
-class Chess::UserInterface;
-class Chess::IOFactory;
+namespace Chess {
+	class GameLogic;
+	class Figure;
+	class Action;
+	class Board;
+	class Connection;
+	class InputManager;
+	class UserInterface;
+	class IOFactory;
+	enum class GameState;
+	enum class Side;
+}
 
 #include "pch.h"
 
 namespace Chess {
 
 	using Move = std::vector<Action>;
+	using Pos2D = std::pair<size_t, size_t>;
+
+	enum class GameState {
+		Unfinished,
+		BlackWin,
+		WhiteWin,
+		Draw
+	};
+	enum class Side {
+		White,
+		Black
+	};
 
 	struct Figure {
 		size_t posOnBoard, moveCount;
@@ -21,50 +37,38 @@ namespace Chess {
 	};
 
 	struct Action {
-		Figure figureStart, figureAfter;
-	};
-
-	class GameLogic {
-	public:
-		enum class GameState {
-			Unfinished,
-			BlackWin,
-			WhiteWin,
-			Draw
-		};
-		enum class Side {
-			White,
-			Black
-		};
-
-		const Board& getBoard() const { return board; }
-
-		virtual std::vector<Move> availableMovesForFigure(const Figure&) const = 0;
-		virtual GameState CheckBoardState() const = 0;
-	protected:
-		Board& board;
-	};
-	class ChessLogic : public GameLogic {
-	public:
-		virtual std::vector<Move> availableMovesForFigure(const Figure&) const;
-		virtual GameState CheckBoardState() const;
+		Action(Figure start, Figure dest, char after) : 
+			figureAtStart(start), figureAtDest(dest), nameAfter(after) {};
+		Figure figureAtStart, figureAtDest;
+		char nameAfter;
 	};
 
 	class Board {
 	public:
-		Board(size_t, std::vector<Figure*>);
+		Board(size_t, const std::vector<Figure*>&);
 
 		const std::vector<Figure*>& getPositions() const { return positions; };
 		bool makeMove(Move);
 		bool undoMove();
 		size_t getWidth() const { return width; };
 		size_t getHeight() const { return height; };
-		GameLogic::Side getMovingSide() const { return movingSide; };
+		Side getMovingSide() const { return movingSide; };
 
 	private:
-		GameLogic::Side movingSide = GameLogic::Side::White;
+		Side movingSide{ Side::White };
 		size_t width, height;
 		std::vector<Figure*> positions;
+	};
+
+	class GameLogic {
+	public:
+		const Board& getBoard() const { return board; }
+
+		virtual std::vector<Move> availableMovesForFigure(const Figure&) const = 0;
+		virtual GameState CheckBoardState() const = 0;
+	protected:
+		GameLogic(size_t _width, const std::vector<Figure*>& startPos) : board(Board(_width, startPos)){}
+		Board board;
 	};
 
 	class Connection {

@@ -1,7 +1,3 @@
-#pragma once
-
-
-#include "pch.h"
 #include "Ultralight.h"
 
 namespace Chess {
