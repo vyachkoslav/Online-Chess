@@ -2,8 +2,8 @@
 
 namespace Chess {
 	class GameLogic;
-	class Figure;
-	class Action;
+	struct Figure;
+	struct Action;
 	class Board;
 	class Connection;
 	class InputManager;
@@ -48,8 +48,13 @@ namespace Chess {
 		Board(size_t, const std::vector<Figure*>&);
 
 		const std::vector<Figure*>& getPositions() const { return positions; };
-		bool makeMove(Move);
+
+		bool makeMove(const Move&, Side side);
 		bool undoMove();
+		bool redoMove();
+		bool canUndo() { return currentMove != moves.begin(); };
+		bool canRedo() { return currentMove != moves.end(); };
+
 		size_t getWidth() const { return width; };
 		size_t getHeight() const { return height; };
 		Side getMovingSide() const { return movingSide; };
@@ -58,6 +63,9 @@ namespace Chess {
 		Side movingSide{ Side::White };
 		size_t width, height;
 		std::vector<Figure*> positions;
+
+		std::vector<Move> moves;
+		std::vector<Move>::iterator currentMove;
 	};
 
 	class GameLogic {
