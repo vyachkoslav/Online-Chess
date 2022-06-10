@@ -26,7 +26,6 @@ namespace Chess {
 
 	class GameLogic {
 	public:
-
 		enum class GameState {
 			Unfinished,
 			BlackWin,
@@ -38,28 +37,32 @@ namespace Chess {
 			Black
 		};
 
-		virtual Move availableMovesForFigure(const Figure&) = 0;
-		virtual GameState CheckBoardState() = 0;
+		const Board& getBoard() const { return board; }
+
+		virtual std::vector<Move> availableMovesForFigure(const Figure&) const = 0;
+		virtual GameState CheckBoardState() const = 0;
+	protected:
+		Board& board;
 	};
 	class ChessLogic : public GameLogic {
 	public:
-		virtual Move availableMovesForFigure(const Figure&);
-		virtual GameState CheckBoardState();
+		virtual std::vector<Move> availableMovesForFigure(const Figure&) const;
+		virtual GameState CheckBoardState() const;
 	};
 
 	class Board {
 	public:
 		Board(size_t, std::vector<Figure*>);
 
-		std::vector<Figure*> getBoard();
+		const std::vector<Figure*>& getPositions() const { return positions; };
 		bool makeMove(Move);
 		bool undoMove();
-		size_t getWidth();
-		size_t getHeight();
-		GameLogic::Side getMovingSide();
+		size_t getWidth() const { return width; };
+		size_t getHeight() const { return height; };
+		GameLogic::Side getMovingSide() const { return movingSide; };
 
 	private:
-		GameLogic::Side movingSide;
+		GameLogic::Side movingSide = GameLogic::Side::White;
 		size_t width, height;
 		std::vector<Figure*> positions;
 	};
@@ -68,7 +71,7 @@ namespace Chess {
 	public:
 		void setConnectionSettings(std::string, unsigned int);
 		bool connect();
-		bool isConnected();
+		bool isConnected() const;
 		void closeConnection();
 		std::string getMessage();
 	};
