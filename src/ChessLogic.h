@@ -17,14 +17,14 @@ namespace Chess {
 
 	private:
 		const std::vector<Figure*>* positions;
-		Figure* passantFig;
+		Figure* passantFig = nullptr;
 
 		static bool inline isEmpty(Figure* const&);
 		static bool inline isEnemy(Figure* const&, Figure* const&);
 
 		static Pos2D inline indToPair(size_t);
-		static int inline pairToInd(size_t, size_t);
-		static int inline pairToInd(Pos2D);
+		static size_t inline pairToInd(size_t, size_t);
+		static size_t inline pairToInd(Pos2D);
 
 		static int inline sgn(int);
 
