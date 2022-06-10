@@ -36,6 +36,8 @@ namespace Chess {
 			return availableMovesForKing(figPos);
 			break;
 		}
+
+		return std::vector<Move>();
 	}
 
 	bool inline ChessLogic::isEmpty(Figure* const& x) {
@@ -47,10 +49,10 @@ namespace Chess {
 	Pos2D inline ChessLogic::indToPair(size_t i) {
 		return Pos2D(i % 8, i / 8);
 	}
-	int inline ChessLogic::pairToInd(size_t x, size_t y) {
+	size_t inline ChessLogic::pairToInd(size_t x, size_t y) {
 		return x + y * 8;
 	}
-	int inline ChessLogic::pairToInd(Pos2D pos) {
+	size_t inline ChessLogic::pairToInd(Pos2D pos) {
 		return pos.first + pos.second * 8;
 	}
 	int inline ChessLogic::sgn(int val) {
@@ -119,7 +121,7 @@ namespace Chess {
 
 		std::vector<Move> out;
 
-		int index = pairToInd(figPos.first, figPos.second);
+		size_t index = pairToInd(figPos.first, figPos.second);
 		std::vector<Figure*>::const_iterator fig = positions->begin() + index;
 		const char& name = (*fig)->name;
 		int frontCell = std::isupper(name) ? 8 : -8;
@@ -223,8 +225,8 @@ namespace Chess {
 		for (int x : options) {
 			for (int y : options) {
 				if (abs(x) != abs(y)) {
-					int newX = figPos.first + x;
-					int newY = figPos.second + y;
+					size_t newX = figPos.first + x;
+					size_t newY = figPos.second + y;
 					if (newX < 8 && newX >= 0 &&
 						newY < 8 && newY >= 0) {
 						Figure* newFig = (*positions)[pairToInd(newX, newY)];
@@ -245,8 +247,8 @@ namespace Chess {
 		for (int x : options) {
 			for (int y : options) {
 				if (!(x == 0 && y == 0)) {
-					int newX = figPos.first + x;
-					int newY = figPos.second + y;
+					size_t newX = figPos.first + x;
+					size_t newY = figPos.second + y;
 					if (newX < 8 && newX >= 0 &&
 						newY < 8 && newY >= 0) {
 						Figure* newFig = (*positions)[pairToInd(newX, newY)];
