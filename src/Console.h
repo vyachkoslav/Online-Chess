@@ -8,10 +8,6 @@ class Chess::ConsoleIOFactory;
 #include "Chess.h"
 
 namespace Chess {
-	class ConsoleInputManager : public InputManager {
-	public:
-		virtual std::string getInput();
-	};
 
 	class ConsoleUserInterface : public UserInterface {
 	public:
@@ -19,11 +15,11 @@ namespace Chess {
 		virtual void setMovePosition(size_t);
 		virtual void showPromotion();
 		virtual void refresh();
+		virtual std::string getInput();
 	};
 
 	class ConsoleIOFactory {
 	public:
-		virtual ConsoleInputManager createInputManager() { return ConsoleInputManager(); };
 		virtual ConsoleUserInterface createUserInterface() { return ConsoleUserInterface(); };
 	};
 }

@@ -1,10 +1,6 @@
 #include "Ultralight.h"
 
 namespace Chess {
-	std::string UltralightInputManager::getInput() {
-		return "";
-	}
-
 	void UltralightUserInterface::updatePosition(size_t) {
 		
 	}
@@ -16,5 +12,8 @@ namespace Chess {
 	}
 	void UltralightUserInterface::refresh() {
 		
+	}
+	std::string UltralightUserInterface::getInput(){
+		return std::string();
 	}
 }

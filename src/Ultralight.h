@@ -11,10 +11,6 @@ namespace Chess {
 #include "Chess.h"
 
 namespace Chess {
-	class UltralightInputManager : public InputManager {
-	public:
-		virtual std::string getInput();
-	};
 	
 	class UltralightUserInterface : public UserInterface {
 	public:
@@ -22,11 +18,11 @@ namespace Chess {
 		virtual void setMovePosition(size_t);
 		virtual void showPromotion();
 		virtual void refresh();
+		virtual std::string getInput();
 	};
 
 	class UltralightIOFactory {
 	public:
-		virtual UltralightInputManager createInputManager() { return UltralightInputManager(); };
 		virtual UltralightUserInterface createUserInterface() { return UltralightUserInterface(); };
 	};
 }

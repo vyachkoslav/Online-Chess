@@ -69,7 +69,7 @@ namespace Chess {
 		std::vector<Figure*> positions;
 
 		std::vector<Move> moves;
-		std::vector<Move>::iterator currentMove;
+		std::vector<Move>::iterator currentMove{ moves.end() };
 	};
 
 	class GameLogic {
@@ -80,7 +80,8 @@ namespace Chess {
 		virtual GameState CheckBoardState() const = 0;
 
 	protected:
-		GameLogic(size_t _width, const std::vector<Figure*>& startPos) : board(Board(_width, startPos)){}
+		GameLogic(size_t _width, const std::vector<Figure*>& startPos) : 
+			board(Board(_width, startPos)){}
 		Board board;
 	};
 
@@ -93,17 +94,13 @@ namespace Chess {
 		std::string getMessage();
 	};
 
-	class InputManager {
-	public:
-		virtual std::string getInput() = 0;
-	};
-
 	class UserInterface {
 	public:
 		virtual void updatePosition(size_t) = 0;
 		virtual void setMovePosition(size_t) = 0;
 		virtual void showPromotion() = 0;
 		virtual void refresh() = 0;
+		virtual std::string getInput() = 0;
 	};
 
 	class IOFactory {
