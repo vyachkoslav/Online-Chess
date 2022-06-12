@@ -1,8 +1,8 @@
 #pragma once
-
-class Chess::ConsoleInputManager;
-class Chess::ConsoleUserInterface;
-class Chess::ConsoleIOFactory;
+namespace Chess {
+	class ConsoleUserInterface;
+	class ConsoleIOFactory;
+}
 
 #include "pch.h"
 #include "Chess.h"

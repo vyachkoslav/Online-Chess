@@ -1,7 +1,6 @@
 #pragma once
 
 namespace Chess {
-	class UltralightInputManager;
 	class UltralightUserInterface;
 	class UltralightIOFactory;
 }

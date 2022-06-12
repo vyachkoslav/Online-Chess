@@ -6,7 +6,6 @@ namespace Chess {
 	struct Action;
 	class Board;
 	class Connection;
-	class InputManager;
 	class UserInterface;
 	class IOFactory;
 	enum class GameState;
