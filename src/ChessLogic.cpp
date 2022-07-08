@@ -1,6 +1,6 @@
 #include "ChessLogic.h"
 
-namespace Chess {
+namespace BoardGame {
 	ChessLogic::ChessLogic() : 
 		GameLogic(8, std::vector<Figure*>{}) {
 		positions = &board.getPositions();

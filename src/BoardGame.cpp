@@ -1,6 +1,6 @@
-#include "Chess.h"
+#include "BoardGame.h"
 
-namespace Chess {
+namespace BoardGame {
 	Board::Board(size_t _width, const std::vector<Figure*>& startPositions) : 
 		width(_width), positions(startPositions) {
 		height = positions.size() / width;

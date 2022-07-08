@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Chess {
+namespace BoardGame {
 	class GameLogic;
 	struct Figure;
 	struct Action;
@@ -14,7 +14,7 @@ namespace Chess {
 
 #include "pch.h"
 
-namespace Chess {
+namespace BoardGame {
 
 	using Move = std::vector<Action>;
 	using Pos2D = std::pair<size_t, size_t>;
@@ -95,17 +95,17 @@ namespace Chess {
 
 	class UserInterface {
 	public:
-		virtual void updatePosition(size_t) = 0;
+		virtual void Start() = 0;
+		virtual void updatePosition(size_t, char) = 0;
 		virtual void setMovePosition(size_t) = 0;
 		virtual void showPromotion() = 0;
-		virtual void refresh() = 0;
-		virtual std::string getInput() = 0;
+		virtual void show() = 0;
+		virtual std::vector<std::string> getInput() = 0;
 	};
 
 	class IOFactory {
 	public:
-		virtual InputManager createInputManager() = 0;
-		virtual UserInterface createUserInterface() = 0;
+		virtual UserInterface* createUserInterface() = 0;
 	};
 }
 

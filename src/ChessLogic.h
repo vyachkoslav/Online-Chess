@@ -1,13 +1,13 @@
 #pragma once
 
-namespace Chess {
+namespace BoardGame {
 	class ChessLogic;
 }
 
 #include "pch.h"
 #include "Chess.h"
 
-namespace Chess {
+namespace BoardGame {
 	class ChessLogic : public GameLogic {
 	public:
 		ChessLogic();

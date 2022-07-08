@@ -32,9 +32,11 @@ bool Board::makeMove(const std::vector<Action>& action, Side side) {
 	
 	if (side == movingSide) {
 		clearPassants();
-		for (Action act : action) {
+		for (const Action& act : action) {
 			auto& pos = positions[act.pos.first + act.pos.second * 8];
 			auto& dest = positions[act.dest.first + act.dest.second * 8];
+			if (!pos)
+				return false;
 			if (act.name == ' ') {
 				pos = nullptr;
 				dest = nullptr;

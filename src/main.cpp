@@ -8,6 +8,10 @@
 #include "Game.h"
 #include "Logic.h"
 
+#include "BoardGame.h"
+#include "ChessLogic.h"
+#include "Ultralight.h"
+
 using namespace ultralight;
 
 namespace match_info {
@@ -203,6 +207,7 @@ private:
 };
 
 int main() {
+    /*
     auto app = App::Create();
     auto window = Window::Create(app->main_monitor(), 450, 450, false, kWindowFlags_Titled);
 
@@ -212,6 +217,12 @@ int main() {
 
     ChessApp my_app(window);
     app->Run();
+    */
+
+    BoardGame::IOFactory* UIFactory = new BoardGame::UltralightIOFactory();
+    BoardGame::UserInterface* UI = UIFactory->createUserInterface();
+    UI->Start();
+
 
     return 0;
 }
