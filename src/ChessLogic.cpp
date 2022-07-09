@@ -1,9 +1,25 @@
 #include "ChessLogic.h"
 
 namespace BoardGame {
-	ChessLogic::ChessLogic() : 
-		GameLogic(8, std::vector<Figure*>{}) {
-		positions = &board.getPositions();
+	ChessLogic::ChessLogic() {
+		std::vector<Figure*> defaultPos;
+
+		for (size_t i = 0; i < defaultPositions.size(); ++i)
+		{
+			if (defaultPositions[i] != ' ') {
+				figures[i] = Figure();
+
+				figures[i].name = defaultPositions[i];
+				figures[i].posOnBoard = i;
+
+				defaultPos.push_back(&figures[i]);
+			}
+			else
+				defaultPos.push_back(nullptr);
+		}
+
+		board = new Board(8, defaultPos);
+		positions = &board->getPositions();
 	}
 
 	GameState ChessLogic::CheckBoardState() const {
@@ -60,10 +76,10 @@ namespace BoardGame {
 	}
 
 	Figure* ChessLogic::getPassantFig() const{
-		if (!board.canUndo())
+		if (!board->canUndo())
 			return nullptr;
 
-		Move move = *(board.getCurrentMove() - 1);
+		Move move = *(board->getCurrentMove() - 1);
 		auto& action = move[0];
 		auto& dest = (*positions)[action.figureAtDest.posOnBoard];
 		if (dest) {

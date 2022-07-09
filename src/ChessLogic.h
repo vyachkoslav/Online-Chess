@@ -5,7 +5,7 @@ namespace BoardGame {
 }
 
 #include "pch.h"
-#include "Chess.h"
+#include "BoardGame.h"
 
 namespace BoardGame {
 	class ChessLogic : public GameLogic {
@@ -14,9 +14,13 @@ namespace BoardGame {
 
 		virtual std::vector<Move> availableMovesForFigure(const Figure&) const;
 		virtual GameState CheckBoardState() const;
-
+		virtual Board* getBoard() { return board; }
 	private:
+		const std::string defaultPositions = "RNBQKBNRPPPPPPPP" + std::string(32, ' ') + "pppppppprnbqkbnr";
+
+		Board* board;
 		const std::vector<Figure*>* positions;
+		Figure figures[32];
 
 		static bool inline isEmpty(Figure* const&);
 		static bool inline isEnemy(Figure* const&, Figure* const&);

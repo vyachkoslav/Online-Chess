@@ -73,15 +73,10 @@ namespace BoardGame {
 
 	class GameLogic {
 	public:
-		const Board& getBoard() const { return board; }
+		virtual const Board* getBoard() = 0;
 
 		virtual std::vector<Move> availableMovesForFigure(const Figure&) const = 0;
 		virtual GameState CheckBoardState() const = 0;
-
-	protected:
-		GameLogic(size_t _width, const std::vector<Figure*>& startPos) : 
-			board(Board(_width, startPos)){}
-		Board board;
 	};
 
 	class Connection {

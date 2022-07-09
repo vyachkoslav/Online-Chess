@@ -1,22 +1,18 @@
 #include "Ultralight.h"
 
 namespace BoardGame {
-	
+
 	using ULUI = UltralightUserInterface;
 	ULUI* ULUI::_instance = nullptr;
 
-	UserInterface* ULUI::Instance(){
+	UserInterface* ULUI::Instance() {
 		if (_instance == nullptr) {
 			_instance = new ULUI();
 		}
 
 		return _instance;
 	}
-
 	void ULUI::Start() {
-		if (eventHandler)
-			return;
-
 		auto app = App::Create();
 		auto window = Window::Create(app->main_monitor(), 450, 450, false, kWindowFlags_Titled);
 		window->SetTitle("Online Chess");
@@ -38,7 +34,7 @@ namespace BoardGame {
 		eventHandler->RunCommand(command);
 	}
 	void ULUI::setMovePosition(size_t index) {
-		int x = index % 8; 
+		int x = index % 8;
 		int y = index / 8;
 
 		std::ostringstream oss;
@@ -48,12 +44,12 @@ namespace BoardGame {
 		eventHandler->RunCommand(command);
 	}
 	void ULUI::showPromotion() {
-		
+
 	}
 	void ULUI::show() {
 		// not used
 	}
-	std::vector<std::string> ULUI::getInput(){
+	std::vector<std::string> ULUI::getInput() {
 		std::vector<std::string> tmp{ ULUI::inputBuffer };
 		ULUI::inputBuffer.clear();
 		return tmp;
@@ -65,9 +61,9 @@ namespace BoardGame {
 		overlay_->view()->LoadURL("file:///board.html");
 	}
 	void ULUI::EventHandler::OnDOMReady(
-		View* caller, 
-		uint64_t frame_id, 
-		bool is_main_frame, 
+		View* caller,
+		uint64_t frame_id,
+		bool is_main_frame,
 		const String& url)
 	{
 		Ref<JSContext> context = caller->LockJSContext();
@@ -106,11 +102,11 @@ namespace BoardGame {
 		return ret;
 	}
 	JSValueRef ULUI::EventHandler::OnTileClick(
-		JSContextRef ctx, 
-		JSObjectRef function, 
-		JSObjectRef thisObject, 
-		size_t argumentCount, 
-		const JSValueRef arguments[], 
+		JSContextRef ctx,
+		JSObjectRef function,
+		JSObjectRef thisObject,
+		size_t argumentCount,
+		const JSValueRef arguments[],
 		JSValueRef* exception)
 	{
 		std::string cpp_string = JSStringToString(ctx, arguments[0]);

@@ -1,17 +1,8 @@
-#include <AppCore/App.h>
-#include <AppCore/Window.h>
-#include <AppCore/Overlay.h>
-#include <AppCore/JSHelpers.h>
-
 #include <iostream>
 #include <sstream>
-#include "Game.h"
-#include "Logic.h"
+#include "Chess.h"
 
-#include "BoardGame.h"
-#include "ChessLogic.h"
-#include "Ultralight.h"
-
+/*
 using namespace ultralight;
 
 namespace match_info {
@@ -205,24 +196,10 @@ private:
         match_info::overlay_->view()->EvaluateScript(command);
     }
 };
+*/
 
 int main() {
-    /*
-    auto app = App::Create();
-    auto window = Window::Create(app->main_monitor(), 450, 450, false, kWindowFlags_Titled);
-
-    window->SetTitle("Online Chess");
-
-    app->set_window(window);
-
-    ChessApp my_app(window);
-    app->Run();
-    */
-
-    BoardGame::IOFactory* UIFactory = new BoardGame::UltralightIOFactory();
-    BoardGame::UserInterface* UI = UIFactory->createUserInterface();
-    UI->Start();
-
+    ChessApp::Start();
 
     return 0;
 }

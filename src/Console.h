@@ -5,7 +5,7 @@ namespace BoardGame {
 }
 
 #include "pch.h"
-#include "Chess.h"
+#include "BoardGame.h"
 
 namespace BoardGame {
 

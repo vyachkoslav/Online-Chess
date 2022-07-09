@@ -14,7 +14,7 @@ namespace BoardGame {
 #include <sstream>
 
 #include "pch.h"
-#include "Chess.h"
+#include "BoardGame.h"
 
 namespace BoardGame {
 	using namespace ultralight;
@@ -32,6 +32,7 @@ namespace BoardGame {
 		UltralightUserInterface() = default;
 	private:
 		static UltralightUserInterface* _instance;
+
 		std::vector<std::string> inputBuffer;
 		void addInput(std::string str) { inputBuffer.push_back(str); }
 
