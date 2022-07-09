@@ -4,20 +4,26 @@
 #include "ChessLogic.h"
 #include "Ultralight.h"
 
-using namespace BoardGame;
+namespace Chess {
 
-class ChessApp {
-public:
-	static void Start();
+	using namespace BoardGame;
 
-private:
-	ChessApp();
+	class ChessApp {
+	public:
+		static void Start();
 
-	static void StartUI() { UI->Start(); }
+	private:
+		ChessApp();
 
-	static const std::string defaultPositions;
+		static void StartUI() { UI->Start(); }
+		static void onLoad();
+		static void onSelect(size_t);
+		static void onUpdate();
 
-	static UserInterface* UI;
+		static const std::string defaultPositions;
 
-	static void initPositions();
-};
+		static UserInterface* UI;
+
+		static void initPositions();
+	};
+}

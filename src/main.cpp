@@ -199,6 +199,8 @@ private:
 */
 
 int main() {
+    using namespace Chess;
+
     ChessApp::Start();
 
     return 0;

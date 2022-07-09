@@ -13,6 +13,7 @@ namespace BoardGame {
 }
 
 #include "pch.h"
+#include "Event.tpp"
 
 namespace BoardGame {
 
@@ -88,6 +89,13 @@ namespace BoardGame {
 		std::string getMessage();
 	};
 
+	struct UIEvents{
+		Event<size_t> onSelect;
+		Event<> onLoad;
+		Event<> onClose;
+		Event<> onUpdate;
+	};
+
 	class UserInterface {
 	public:
 		virtual void Start() = 0;
@@ -96,6 +104,7 @@ namespace BoardGame {
 		virtual void showPromotion() = 0;
 		virtual void show() = 0;
 		virtual std::vector<std::string> getInput() = 0;
+		virtual UIEvents* getEvents() = 0;
 	};
 
 	class IOFactory {

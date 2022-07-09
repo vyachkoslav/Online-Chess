@@ -1,18 +1,34 @@
 #include "Chess.h"
 #include <thread>
 
-UserInterface* ChessApp::UI = nullptr;
+namespace Chess {
 
-void ChessApp::Start() {
-    IOFactory* UIFactory = new UltralightIOFactory();
-    UI = UIFactory->createUserInterface();
-    GameLogic* logic = new ChessLogic();
+    UserInterface* ChessApp::UI = nullptr;
 
-    std::thread UIThread(StartUI);
+    void ChessApp::onLoad() {
+        std::cout << "load" << std::endl;
+        UI->updatePosition(0, 'r');
+    }
+    void ChessApp::onSelect(size_t pos) {
+        std::cout << "pos: " << pos << std::endl;
+    }
+    void ChessApp::onUpdate() {
+        std::cout << "update" << std::endl;
+    }
 
-    UIThread.join();
+    void ChessApp::Start() {
+        IOFactory* UIFactory = new UltralightIOFactory();
+        UI = UIFactory->createUserInterface();
+        GameLogic* logic = new ChessLogic();
 
-    delete UIFactory;
-    delete logic;
-    delete UI;
+        UI->getEvents()->onSelect.AddListener(onSelect);
+        UI->getEvents()->onLoad.AddListener(onLoad);
+        UI->getEvents()->onUpdate.AddListener(onUpdate);
+
+        StartUI();
+
+        delete UIFactory;
+        delete logic;
+        delete UI;
+    }
 }

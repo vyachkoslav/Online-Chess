@@ -9,6 +9,7 @@ namespace BoardGame {
 #include <AppCore/Window.h>
 #include <AppCore/Overlay.h>
 #include <AppCore/JSHelpers.h>
+#include <Windows.h>
 
 #include <iostream>
 #include <sstream>
@@ -28,15 +29,20 @@ namespace BoardGame {
 		virtual void showPromotion();
 		virtual void show();
 		virtual std::vector<std::string> getInput();
+		virtual UIEvents* getEvents() { return &events; }
 	protected:
 		UltralightUserInterface() = default;
 	private:
-		static UltralightUserInterface* _instance;
+		static UltralightUserInterface* instance;
+
+		RefPtr<App> app;
+		UIEvents events;
 
 		std::vector<std::string> inputBuffer;
 		void addInput(std::string str) { inputBuffer.push_back(str); }
 
-		class EventHandler : public LoadListener {
+		class EventHandler : public LoadListener, public AppListener {
+			
 			RefPtr<Overlay> overlay_;
 		public:
 			EventHandler(Ref<Window> win);
@@ -44,10 +50,11 @@ namespace BoardGame {
 
 			String RunCommand(const String&);
 		private:
-			void OnDOMReady(View* caller,
+			virtual void OnUpdate() override;
+			virtual void OnDOMReady(View* caller,
 				uint64_t frame_id,
 				bool is_main_frame,
-				const String& url);
+				const String& url) override;
 
 			static std::string JSStringToString(JSContextRef ctx, JSValueRef str);
 			static JSValueRef OnTileClick(

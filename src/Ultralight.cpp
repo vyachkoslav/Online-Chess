@@ -3,17 +3,17 @@
 namespace BoardGame {
 
 	using ULUI = UltralightUserInterface;
-	ULUI* ULUI::_instance = nullptr;
+	ULUI* ULUI::instance = nullptr;
 
 	UserInterface* ULUI::Instance() {
-		if (_instance == nullptr) {
-			_instance = new ULUI();
+		if (instance == nullptr) {
+			instance = new ULUI();
 		}
 
-		return _instance;
+		return instance;
 	}
 	void ULUI::Start() {
-		auto app = App::Create();
+		app = App::Create();
 		auto window = Window::Create(app->main_monitor(), 450, 450, false, kWindowFlags_Titled);
 		window->SetTitle("Online Chess");
 		app->set_window(window);
@@ -21,6 +21,7 @@ namespace BoardGame {
 		auto handler = EventHandler(window);
 		eventHandler = &handler;
 
+		app->set_listener(eventHandler);
 		app->Run();
 	}
 	void ULUI::updatePosition(size_t index, char name) {
@@ -47,7 +48,7 @@ namespace BoardGame {
 
 	}
 	void ULUI::show() {
-		// not used
+		std::cout << "show" << std::endl;
 	}
 	std::vector<std::string> ULUI::getInput() {
 		std::vector<std::string> tmp{ ULUI::inputBuffer };
@@ -59,6 +60,10 @@ namespace BoardGame {
 		overlay_ = Overlay::Create(win, win->width(), win->height(), 0, 0);
 		overlay_->view()->set_load_listener(this);
 		overlay_->view()->LoadURL("file:///board.html");
+	}
+	void ULUI::EventHandler::OnUpdate() {
+		ULUI::Instance()->getEvents()->onUpdate.Invoke();
+		Sleep(1000 / 30); //30fps
 	}
 	void ULUI::EventHandler::OnDOMReady(
 		View* caller,
@@ -78,6 +83,7 @@ namespace BoardGame {
 		}
 
 		RunCommand("init();");
+		ULUI::Instance()->getEvents()->onLoad.Invoke();
 	}
 	std::string ULUI::EventHandler::JSStringToString(JSContextRef ctx, JSValueRef str) {
 		JSValueRef exc = nullptr;
@@ -110,8 +116,8 @@ namespace BoardGame {
 		JSValueRef* exception)
 	{
 		std::string cpp_string = JSStringToString(ctx, arguments[0]);
-		ULUI::_instance->addInput(cpp_string);
-		std::cout << cpp_string << std::endl;
+		ULUI::instance->addInput(cpp_string);
+		ULUI::Instance()->getEvents()->onSelect.Invoke(std::stoi(cpp_string));
 
 		return JSValueMakeNull(ctx);
 	}
