@@ -18,7 +18,7 @@ namespace BoardGame {
 namespace BoardGame {
 
 	using Move = std::vector<Action>;
-	using Pos2D = std::pair<size_t, size_t>;
+	using Pos2D = std::pair<long long, long long>;
 
 	enum class GameState {
 		Unfinished,
@@ -59,8 +59,8 @@ namespace BoardGame {
 		size_t getHeight() const { return height; };
 		Side getMovingSide() const { return movingSide; };
 
-		const std::vector<Move>& getMoves() const { return moves; };
-		std::vector<Move>::iterator getCurrentMove() const { return currentMove; };
+		const std::vector<Move*>& getMoves() const { return moves; };
+		std::vector<Move*>::iterator getCurrentMove() const { return currentMove; };
 
 	private:
 		
@@ -68,15 +68,16 @@ namespace BoardGame {
 		size_t width, height;
 		std::vector<Figure*> positions;
 
-		std::vector<Move> moves;
-		std::vector<Move>::iterator currentMove{ moves.end() };
+		std::vector<Move*> moves;
+		std::vector<Move*>::iterator currentMove{ moves.end() };
 	};
 
 	class GameLogic {
 	public:
-		virtual const Board* getBoard() = 0;
+		virtual Board* getBoard() = 0;
 
 		virtual std::vector<Move> availableMovesForFigure(const Figure&) const = 0;
+		virtual std::vector<Move> availableMovesForFigure(size_t) const = 0;
 		virtual GameState CheckBoardState() const = 0;
 	};
 

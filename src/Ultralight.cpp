@@ -13,7 +13,7 @@ namespace BoardGame {
 		return instance;
 	}
 	void ULUI::Start() {
-		app = App::Create();
+		auto app = App::Create();
 		auto window = Window::Create(app->main_monitor(), 450, 450, false, kWindowFlags_Titled);
 		window->SetTitle("Online Chess");
 		app->set_window(window);
@@ -25,21 +25,15 @@ namespace BoardGame {
 		app->Run();
 	}
 	void ULUI::updatePosition(size_t index, char name) {
-		int x = index % 8;
-		int y = index / 8;
-
 		std::ostringstream oss;
-		oss << "SetPosition('" << x << "', '" << y << "', '" << name << "');"; // todo only index as parameter
+		oss << "SetPosition('" << index << "', '" << name << "');"; // todo only index as parameter
 		const ultralight::String command = oss.str().c_str();
 
 		eventHandler->RunCommand(command);
 	}
 	void ULUI::setMovePosition(size_t index) {
-		int x = index % 8;
-		int y = index / 8;
-
 		std::ostringstream oss;
-		oss << "SetMove('" << x << "', '" << y << "');"; // todo only index as parameter
+		oss << "SetMove('" << index  << "');"; // todo only index as parameter
 		const ultralight::String command = oss.str().c_str();
 
 		eventHandler->RunCommand(command);

@@ -35,7 +35,6 @@ namespace BoardGame {
 	private:
 		static UltralightUserInterface* instance;
 
-		RefPtr<App> app;
 		UIEvents events;
 
 		std::vector<std::string> inputBuffer;

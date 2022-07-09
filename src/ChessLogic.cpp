@@ -7,15 +7,16 @@ namespace BoardGame {
 		for (size_t i = 0; i < defaultPositions.size(); ++i)
 		{
 			if (defaultPositions[i] != ' ') {
-				figures[i] = Figure();
+				auto figure = new Figure();
+				figure->name = defaultPositions[i];
+				figure->posOnBoard = i;
 
-				figures[i].name = defaultPositions[i];
-				figures[i].posOnBoard = i;
-
-				defaultPos.push_back(&figures[i]);
+				figures.push_back(figure);
+				defaultPos.push_back(figure);
 			}
-			else
+			else {
 				defaultPos.push_back(nullptr);
+			}
 		}
 
 		board = new Board(8, defaultPos);
@@ -27,11 +28,18 @@ namespace BoardGame {
 	}
 
 	std::vector<Move> ChessLogic::availableMovesForFigure(const Figure& figure) const {
-		Pos2D figPos = indToPair(figure.posOnBoard);
+		return availableMovesForFigure(figure.posOnBoard);
+	}
+	std::vector<Move> ChessLogic::availableMovesForFigure(size_t pos) const {
 
-		const Figure* fig = (*positions)[figure.posOnBoard];
+		Pos2D figPos;
+		figPos.first = pos % 8;
+		figPos.second = pos / 8;
+
+		const Figure* fig = (*positions)[pos];
 		if (!fig)
 			return std::vector<Move>();
+
 		switch (std::tolower(fig->name)) {
 		case 'p':
 			return availableMovesForPawn(figPos);
@@ -79,8 +87,8 @@ namespace BoardGame {
 		if (!board->canUndo())
 			return nullptr;
 
-		Move move = *(board->getCurrentMove() - 1);
-		auto& action = move[0];
+		Move* move = *(board->getCurrentMove() - 1);
+		auto& action = (*move)[0];
 		auto& dest = (*positions)[action.figureAtDest.posOnBoard];
 		if (dest) {
 			long long startY = indToPair(action.figureAtStart.posOnBoard).second;
@@ -94,20 +102,15 @@ namespace BoardGame {
 	}
 
 	Action ChessLogic::prepareAction(Pos2D pos, Pos2D dest) const {
-		Figure def = Figure();
-
 		const Figure first = *(*positions)[pairToInd(pos)];
-		const Figure* secPtr = (*positions)[pairToInd(pos)];
-		if (!secPtr) {
-			secPtr = &def;
-		}
-		return Action(first, *secPtr, first.name);
+		return prepareAction(pos, dest, first.name);
 	}
 	Action ChessLogic::prepareAction(Pos2D pos, Pos2D dest, char newName) const {
 		Figure def = Figure();
+		def.posOnBoard = pairToInd(dest);
 
 		const Figure first = *(*positions)[pairToInd(pos)];
-		const Figure* secPtr = (*positions)[pairToInd(pos)];
+		const Figure* secPtr = (*positions)[pairToInd(dest)];
 		if (!secPtr) {
 			secPtr = &def;
 		}
@@ -118,7 +121,8 @@ namespace BoardGame {
 		std::vector<Move> out;
 		Figure* fig = (*positions)[pairToInd(figPos)];
 		Pos2D pos = figPos;
-		iter(&pos);
+		if(filter(pos))
+			iter(&pos);
 		for (; filter(pos); iter(&pos)) {
 			Figure* other = (*positions)[pairToInd(pos)];
 			if (isEmpty(other) || isEnemy(fig, (*positions)[pairToInd(pos)])) {

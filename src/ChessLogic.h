@@ -13,14 +13,15 @@ namespace BoardGame {
 		ChessLogic();
 
 		virtual std::vector<Move> availableMovesForFigure(const Figure&) const;
+		virtual std::vector<Move> availableMovesForFigure(size_t) const;
 		virtual GameState CheckBoardState() const;
-		virtual Board* getBoard() { return board; }
+		virtual Board* getBoard() override { return board; }
 	private:
 		const std::string defaultPositions = "RNBQKBNRPPPPPPPP" + std::string(32, ' ') + "pppppppprnbqkbnr";
 
 		Board* board;
 		const std::vector<Figure*>* positions;
-		Figure figures[32];
+		std::vector<Figure*> figures;
 
 		static bool inline isEmpty(Figure* const&);
 		static bool inline isEnemy(Figure* const&, Figure* const&);

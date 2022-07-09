@@ -1,9 +1,13 @@
 #include "BoardGame.h"
+#include <stdexcept>
 
 namespace BoardGame {
-	Board::Board(size_t _width, const std::vector<Figure*>& startPositions) : 
+	Board::Board(size_t _width, const std::vector<Figure*>& startPositions) :
 		width(_width), positions(startPositions) {
 		height = positions.size() / width;
+
+		if(height * width != startPositions.size())
+			throw std::invalid_argument("Board not symmetrical");
 	}
 	bool Board::makeMove(const Move& move, Side side){
 		if (move.size() > 0 && side == movingSide) {
@@ -26,7 +30,9 @@ namespace BoardGame {
 			}
 			movingSide = movingSide == Side::White ? Side::Black : Side::White;
 
-			moves.push_back(move);
+			Move* savedMove = new Move(move);
+			moves.push_back(savedMove);
+			currentMove = moves.end() - 1;
 			return true;
 		}
 		return false;
