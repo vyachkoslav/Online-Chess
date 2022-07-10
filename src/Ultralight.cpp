@@ -38,7 +38,7 @@ namespace BoardGame {
 
 		eventHandler->RunCommand(command);
 	}
-	void ULUI::showPromotion() {
+	void ULUI::alertText(std::string line) {
 
 	}
 	void ULUI::show() {

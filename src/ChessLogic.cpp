@@ -87,7 +87,7 @@ namespace BoardGame {
 		if (!board->canUndo())
 			return nullptr;
 
-		Move* move = *(board->getCurrentMove() - 1);
+		Move* move = *(board->getCurrentMove());
 		auto& action = (*move)[0];
 		auto& dest = (*positions)[action.figureAtDest.posOnBoard];
 		if (dest) {

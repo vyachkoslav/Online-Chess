@@ -102,7 +102,7 @@ namespace BoardGame {
 		virtual void Start() = 0;
 		virtual void updatePosition(size_t, char) = 0;
 		virtual void setMovePosition(size_t) = 0;
-		virtual void showPromotion() = 0;
+		virtual void alertText(std::string) = 0;
 		virtual void show() = 0;
 		virtual std::vector<std::string> getInput() = 0;
 		virtual UIEvents* getEvents() = 0;

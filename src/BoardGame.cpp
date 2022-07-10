@@ -25,6 +25,7 @@ namespace BoardGame {
 					dest = pos;
 					dest->moveCount++;
 					dest->name = action.nameAfter;
+					dest->posOnBoard = action.figureAtDest.posOnBoard;
 					pos = nullptr;
 				}
 			}

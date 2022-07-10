@@ -26,7 +26,7 @@ namespace BoardGame {
 		virtual void Start();
 		virtual void updatePosition(size_t, char);
 		virtual void setMovePosition(size_t);
-		virtual void showPromotion();
+		virtual void alertText(std::string);
 		virtual void show();
 		virtual std::vector<std::string> getInput();
 		virtual UIEvents* getEvents() { return &events; }
