@@ -44,10 +44,8 @@ namespace BoardGame {
 	void ULUI::show() {
 		std::cout << "show" << std::endl;
 	}
-	std::vector<std::string> ULUI::getInput() {
-		std::vector<std::string> tmp{ ULUI::inputBuffer };
-		ULUI::inputBuffer.clear();
-		return tmp;
+	std::string ULUI::getInput(std::string message = "") {
+		return "";
 	}
 
 	ULUI::EventHandler::EventHandler(Ref<Window> win) {

@@ -9,6 +9,10 @@ namespace BoardGame {
 		if(height * width != startPositions.size())
 			throw std::invalid_argument("Board not symmetrical");
 	}
+	Board::~Board() {
+		for (auto& move : moves)
+			delete move;
+	}
 	bool Board::makeMove(const Move& move, Side side){
 		if (move.size() > 0 && side == movingSide) {
 			for (const Action& action : move) {

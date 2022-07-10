@@ -11,6 +11,7 @@ namespace BoardGame {
 	class ChessLogic : public GameLogic {
 	public:
 		ChessLogic();
+		~ChessLogic();
 
 		virtual std::vector<Move> availableMovesForFigure(const Figure&) const;
 		virtual std::vector<Move> availableMovesForFigure(size_t) const;

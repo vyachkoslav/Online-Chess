@@ -22,6 +22,11 @@ namespace BoardGame {
 		board = new Board(8, defaultPos);
 		positions = &board->getPositions();
 	}
+	ChessLogic::~ChessLogic() {
+		for (auto& fig : figures)
+			delete fig;
+		delete board;
+	}
 
 	GameState ChessLogic::CheckBoardState() const {
 		return GameState::Unfinished;

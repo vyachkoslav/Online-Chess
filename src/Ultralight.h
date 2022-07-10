@@ -28,7 +28,7 @@ namespace BoardGame {
 		virtual void setMovePosition(size_t);
 		virtual void alertText(std::string);
 		virtual void show();
-		virtual std::vector<std::string> getInput();
+		virtual std::string getInput(std::string);
 		virtual UIEvents* getEvents() { return &events; }
 	protected:
 		UltralightUserInterface() = default;
