@@ -3,14 +3,14 @@
 namespace BoardGame {
 
 	using ULUI = UltralightUserInterface;
-	ULUI* ULUI::instance = nullptr;
+	ULUI* ULUI::instance_ = nullptr;
 
 	UserInterface* ULUI::Instance() {
-		if (instance == nullptr) {
-			instance = new ULUI();
+		if (instance_ == nullptr) {
+			instance_ = new ULUI();
 		}
 
-		return instance;
+		return instance_;
 	}
 	void ULUI::Start() {
 		auto app = App::Create();
@@ -26,25 +26,29 @@ namespace BoardGame {
 	}
 	void ULUI::updatePosition(size_t index, char name) {
 		std::ostringstream oss;
-		oss << "SetPosition('" << index << "', '" << name << "');"; // todo only index as parameter
+		oss << "SetPosition('" << index << "', '" << name << "');";
 		const ultralight::String command = oss.str().c_str();
 
 		eventHandler->RunCommand(command);
 	}
 	void ULUI::setMovePosition(size_t index) {
 		std::ostringstream oss;
-		oss << "SetMove('" << index  << "');"; // todo only index as parameter
+		oss << "SetMove('" << index  << "');";
 		const ultralight::String command = oss.str().c_str();
 
 		eventHandler->RunCommand(command);
 	}
-	void ULUI::alertText(std::string line) {
-
-	}
-	void ULUI::show() {
-		std::cout << "show" << std::endl;
+	void ULUI::printText(std::string line) {
+		std::ostringstream oss;
+		oss << "Print('" << line << "');";
+		const ultralight::String command = oss.str().c_str();
+		eventHandler->RunCommand(command);
 	}
 	std::string ULUI::getInput(std::string message = "") {
+		std::ostringstream oss;
+		oss << "prompt('" << message << "');";
+		const ultralight::String command = oss.str().c_str();
+		eventHandler->RunCommand(command);
 		return "";
 	}
 
@@ -108,7 +112,7 @@ namespace BoardGame {
 		JSValueRef* exception)
 	{
 		std::string cpp_string = JSStringToString(ctx, arguments[0]);
-		ULUI::instance->addInput(cpp_string);
+		ULUI::instance_->addInput(cpp_string);
 		ULUI::Instance()->getEvents()->onSelect.Invoke(std::stoi(cpp_string));
 
 		return JSValueMakeNull(ctx);

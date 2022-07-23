@@ -59,9 +59,8 @@
         }
     </style>
     <script>
-        function SetPosition(x, y, name) {
+        function SetPosition(id, name) {
 
-            var id = String(x) + String(y);
             var tile = document.getElementById(id);
             var imgUrl = "";
             if (name == name.toUpperCase()) {
@@ -74,27 +73,26 @@
             if (name === ' ') {
                 tile.children[0].style.backgroundImage = "none";
             }
-            else if (name === 'm') {
-                tile.classList.add("available");
-            }
             else {
                 tile.children[0].style.backgroundImage = "url('" + imgUrl + "')";
             }
+        }
+        function SetMove(id) {
+            var tile = document.getElementById(id);
+            tile.classList.add("available");
         }
         function onPositionChoose(event) {
             var position = event.target.parentElement.id;
             OnTileClick(position);
         }
         function init() {
-            var letters = "01234567";
-
             var board = document.getElementById("board");
             for (let i = 0; i < 64; ++i) {
                 var tile = document.createElement("div");
                 var figure = document.createElement("div");
                 tile.classList.add("tile");
                 figure.classList = "figure";
-                tile.id = String(i % 8) + (7 - Math.floor(i / 8))
+                tile.id = 63 - i
                 tile.addEventListener("click", onPositionChoose)
                 if ((i + Math.floor(i / 8)) % 2 == 0) {
                     tile.style = "background-color: gray;"

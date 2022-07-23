@@ -7,6 +7,8 @@ namespace Chess {
     GameLogic* ChessApp::logic = nullptr;
     size_t ChessApp::selectedPos;
     std::vector<Move> ChessApp::promotingMoves;
+    Team ChessApp::teams[2];
+    Team* ChessApp::movingTeam = &teams[0];
 
     void ChessApp::onLoad() {
         for (auto figure : logic->getBoard()->getPositions()) {
@@ -40,7 +42,8 @@ namespace Chess {
                 }
             }
             if (possibleMoves.size() == 1) {
-                if (logic->getBoard()->makeMove(possibleMoves[0], logic->getBoard()->getMovingSide())) {
+                if (logic->getBoard()->makeMove(possibleMoves[0])) {
+                    movingTeam = getOppositeTeam(movingTeam);
                     for (const auto& action : possibleMoves[0]) {
                         UI->updatePosition(action.figureAtStart.posOnBoard, ' ');
                         UI->updatePosition(action.figureAtDest.posOnBoard, action.nameAfter);
@@ -94,8 +97,14 @@ namespace Chess {
         }
     }
     bool ChessApp::isOnMovingSide(char name) {
-        Side figSide = isupper(name) ? Side::White : Side::Black;
-        return figSide == logic->getBoard()->getMovingSide();
+        Team* figSide = getFigureTeam(name);
+        return figSide == movingTeam;
+    }
+    Team* ChessApp::getFigureTeam(char name) {
+        return isupper(name) ? &teams[0] : &teams[1];
+    }
+    Team* ChessApp::getOppositeTeam(Team* team) {
+        return team == &teams[0] ? &teams[1] : &teams[0];
     }
 
     void ChessApp::ShowPromotingMoves(const std::vector<Move>& possibleMoves) {
@@ -116,7 +125,9 @@ namespace Chess {
        size_t y = pos / 8;
        if (x < promotingMoves.size() && y == 0) {
            Action action = promotingMoves[x][0];
-           if (logic->getBoard()->makeMove(std::vector<Action>{action}, logic->getBoard()->getMovingSide())) {
+           if (logic->getBoard()->makeMove(std::vector<Action>{action})) {
+               movingTeam = getOppositeTeam(movingTeam);
+
                UI->updatePosition(action.figureAtStart.posOnBoard, ' ');
                UI->updatePosition(action.figureAtDest.posOnBoard, action.nameAfter);
                pos = selectedPos = action.figureAtDest.posOnBoard;

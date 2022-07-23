@@ -15,7 +15,7 @@ namespace BoardGame {
 
 		virtual std::vector<Move> availableMovesForFigure(const Figure&) const;
 		virtual std::vector<Move> availableMovesForFigure(size_t) const;
-		virtual GameState CheckBoardState() const;
+		virtual GameState ñheckBoardState() const;
 		virtual Board* getBoard() override { return board; }
 	private:
 		const std::string defaultPositions = "RNBQKBNRPPPPPPPP" + std::string(32, ' ') + "pppppppprnbqkbnr";

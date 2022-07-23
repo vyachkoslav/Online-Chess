@@ -28,7 +28,7 @@ namespace BoardGame {
 		delete board;
 	}
 
-	GameState ChessLogic::CheckBoardState() const {
+	GameState ChessLogic::ñheckBoardState() const {
 		return GameState::Unfinished;
 	}
 
@@ -64,9 +64,9 @@ namespace BoardGame {
 		case 'k':
 			return availableMovesForKing(figPos);
 			break;
+		default:
+			throw std::invalid_argument("Given figure does not exist.");
 		}
-
-		return std::vector<Move>();
 	}
 
 	bool inline ChessLogic::isEmpty(Figure* const& x) {
@@ -176,8 +176,8 @@ namespace BoardGame {
 			std::copy(moves.begin(), moves.end(), std::back_inserter(out));
 			if (((std::isupper(name) && figPos.second == 1) ||								// is at start pos
 				(std::islower(name) && figPos.second == 6)) &&
-				isEmpty(fig[frontCell * 2])) {
-				out.push_back(Move{ prepareAction(figPos, indToPair(index + frontCell * 2)) });
+				isEmpty(fig[frontCell * 2ULL])) {
+				out.push_back(Move{ prepareAction(figPos, indToPair(index + frontCell * 2ULL)) });
 			}
 		}
 

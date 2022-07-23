@@ -26,14 +26,13 @@ namespace BoardGame {
 		virtual void Start();
 		virtual void updatePosition(size_t, char);
 		virtual void setMovePosition(size_t);
-		virtual void alertText(std::string);
-		virtual void show();
+		virtual void printText(std::string);
 		virtual std::string getInput(std::string);
 		virtual UIEvents* getEvents() { return &events; }
 	protected:
 		UltralightUserInterface() = default;
 	private:
-		static UltralightUserInterface* instance;
+		static UltralightUserInterface* instance_;
 
 		UIEvents events;
 

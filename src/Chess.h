@@ -23,13 +23,18 @@ namespace Chess {
 
 		static void ShowPromotingMoves(const std::vector<Move>&);
 		static void RefreshBoard();
-		static bool isOnMovingSide(char);
+		static bool isOnMovingSide(char name);
+		static Team* getFigureTeam(char name);
+		static Team* getOppositeTeam(Team* team);
+
 		static const std::vector<Figure*>& getPositions();
 
 		static const std::string defaultPositions;
 
 		static size_t selectedPos;
 		static UserInterface* UI;
+		static Team teams[2];
+		static Team* movingTeam;
 		static GameLogic* logic;
 		static std::vector<Move> promotingMoves;
 		static bool IsPromoting() {
